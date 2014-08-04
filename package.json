@@ -11,5 +11,10 @@
   },
   "repository": "",
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "async": "~0.9.0",
+    "request": "~2.39.0",
+    "cheerio": "~0.17.0"
+  }
 }
