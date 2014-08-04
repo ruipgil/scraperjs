@@ -20,16 +20,20 @@ scraper.createStatic("https://news.ycombinator.com/")
 	.onStatusCode(200, function() {
 		console.log("200");
 	})
-	.scrape(function($) {
-		return $(".title a").map(function(elm) {
-			return $(this).text();
-		}).get();
-	}, function(news) {
-		news.forEach(function(newsElm) {
-			console.log(newsElm);
-		});
+	.scrape(
+		function($) {
+			return $(".title a").map(function(elm) {
+				return $(this).text();
+			}).get();
+		}, function(news) {
+			news.forEach(function(newsElm) {
+				console.log(newsElm);
+			});
+		})
+	.onError(function(error) {
+		console.log("there's an error", error, error.stack);
 	})
-	.done(function(err) {
+	.done(function() {
 		console.log("i'm done");
 	});
 /*
