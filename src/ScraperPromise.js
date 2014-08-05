@@ -3,7 +3,7 @@ var async = require('async');
 /**
  * @constructor
  */
-ScraperPromise = function() {
+var ScraperPromise = function() {
 	/**
 	 * Scraper to use. This means that the promise can be recycled.
 	 *
@@ -50,7 +50,7 @@ ScraperPromise.prototype = {
 	 */
 	onStatusCode: function(code, callback) {
 		var that = this;
-		if (typeof code == "function") {
+		if (typeof code == 'function') {
 			callback = code;
 			this.promises.push(function onGenericStatusCode(done) {
 				callback(that.scraper.getStatusCode());
@@ -124,7 +124,6 @@ ScraperPromise.prototype = {
 	 * @public
 	 */
 	timeout: function(time, callback) {
-		var scraper = this.scraper;
 		this.promises.push(function timeout(done) {
 			setTimeout(function() {
 				callback();

@@ -9,7 +9,7 @@ var request = require('request');
  *   when an HTTP request is successfully made.
  * @constructor
  */
-AbstractScraper = function(callback) {
+var AbstractScraper = function(callback) {
 	/**
 	 * Status code of the requested page.
 	 *
@@ -68,6 +68,7 @@ AbstractScraper.prototype = {
 	getStatusCode: function() {
 		return this.statusCode;
 	},
+	/* jshint unused:false */
 	/**
 	 * Loads the string, to a representation that can be used in the
 	 *   scraping process.

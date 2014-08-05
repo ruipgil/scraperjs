@@ -8,10 +8,28 @@ var phantom = require('phantom'),
  *
  * @extends {AbstractScraper}
  */
-DynamicScraper = function(callback) {
+var DynamicScraper = function(callback) {
 	AbstractScraper.call(this, callback);
+	/**
+	 * Phantom instance.
+	 *
+	 * @type {?}
+	 * @private
+	 */
 	this.ph = null;
+	/**
+	 * Phantom's page.
+	 *
+	 * @type {?}
+	 * @private
+	 */
 	this.page = null;
+	/**
+	 * Error.
+	 *
+	 * @type {?ErrorScraper}
+	 * @private
+	 */
 	this.error = null;
 };
 DynamicScraper.prototype = Object.create(AbstractScraper.prototype);
@@ -22,23 +40,19 @@ DynamicScraper.prototype = Object.create(AbstractScraper.prototype);
 DynamicScraper.prototype.loadBody = function(done) {
 	var that = this;
 	phantom.create({
-		onStdout: function(data) {
-			//console.log(data.toString());
-		},
-		onStderr: function(data) {
-			//console.log(data.toString());
-		}
+		onStdout: function() {},
+		onStderr: function() {}
 	}, function(ph) {
 		that.ph = ph;
 		ph.createPage(function(page) {
 			that.page = page;
 			page.setContent(that.body, null, function(success) {
 				if (!success) {
-					that.error = new ScraperError("Couldn't set the content of the page");
+					that.error = new ScraperError('Couldn\'t set the content of the page');
 				}
-				page.injectJs("./bower_components/jquery/dist/jquery.min.js", function(success) {
+				page.injectJs('./bower_components/jquery/dist/jquery.min.js', function(success) {
 					if (!success) {
-						that.error = new ScraperError("Couldn't inject jQuery into the page.");
+						that.error = new ScraperError('Couldn\'t inject jQuery into the page.');
 					}
 					done();
 				});
@@ -74,11 +88,4 @@ DynamicScraper.prototype.scrape = function(scraperFn, callbackFn) {
 	return this;
 };
 
-module.exports = function(url, callback) {
-	var scraper = new DynamicScraper(callback);
-	if (url) {
-		return scraper.get(url);
-	} else {
-		return scraper;
-	}
-};
+module.exports = DynamicScraper;

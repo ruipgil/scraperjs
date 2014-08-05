@@ -3,7 +3,7 @@
  */
 var ScraperError = function(message) {
 	this.message = message;
-	this.name = "ScraperError";
+	this.name = 'ScraperError';
 	this.stack = (new Error()).stack;
 };
 ScraperError.prototype = new Error();
