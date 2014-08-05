@@ -12,4 +12,5 @@ Thumbs.db
 *.sublime-workspace
 *.ignore
 node_modules
+bower_components
 docs
