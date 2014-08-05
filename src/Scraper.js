@@ -1,16 +1,16 @@
 var SimpleScraper = require('./staticScraper.js'),
-	DynamicScraper = require('./staticScraper.js'),
+	DynamicScraper = require('./dynamicScraper.js'),
 	ScraperPromise = require('./scraperPromise.js');
 
 function initScraper(type, url) {
 	var promise = new ScraperPromise();
 	if (url) {
-		type(url, function(scraper) {
-			promise._fire(scraper);
+		type(url, function(error, scraper) {
+			promise._fire(error, scraper);
 		});
 	} else {
-		type(function(scraper) {
-			promise._fire(scraper);
+		type(function(error, scraper) {
+			promise._fire(error, scraper);
 		});
 	}
 	return promise;
@@ -22,5 +22,8 @@ module.exports = {
 	},
 	createDynamic: function createDynamic(url) {
 		return initScraper(DynamicScraper, url);
-	}
+	},
+	SimpleScraper: SimpleScraper,
+	DynamicScraper: DynamicScraper,
+	ScraperPromise: ScraperPromise
 };

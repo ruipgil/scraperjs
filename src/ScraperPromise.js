@@ -178,12 +178,21 @@ ScraperPromise.prototype = {
 	/**
 	 * Starts the promise chain.
 	 *
+	 * @param  {?} error Error object, to fire the error callback,
+	 *   from an error that happened before.
 	 * @param  {!Scraper} scraper Scraper to use in the promise chain.
 	 * @protected
 	 */
-	_fire: function(scraper) {
+	_fire: function(error, scraper) {
 		var that = this;
 		this.scraper = scraper;
+
+		if (error) {
+			this.errorCallback(error);
+			that.doneCallback();
+			return;
+		}
+
 		async.eachSeries(this.promises, function dispatcher(fn, done) {
 			try {
 				fn(done);
