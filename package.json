@@ -1,12 +1,19 @@
 {
   "name": "scraperjs",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A complete and versatile web scraper.",
   "main": "./src/Scraper.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ruipgil/scraperjs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ruipgil/scraperjs/issues"
+  },
+  "gitHead": "c58be022438e49564597bbb3ad7c036d610744f8",
   "author": "Rui Gil",
   "license": "MIT",
   "dependencies": {
@@ -14,5 +21,10 @@
     "request": "~2.39.0",
     "cheerio": "~0.17.0",
     "phantom": "~0.6.5"
-  }
+  },
+  "readmeFilename": "README.md",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {}
 }
