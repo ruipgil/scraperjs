@@ -1,15 +1,14 @@
-var request = require('request');
+var request = require('request'),
+	ScraperPromise = require('./ScraperPromise');
 
 /**
  * An abstract scraper, this class should not be used directly as a
  *   scraper, instead a concrete scraper should inherit or use this
  *   class as a composite this class.
  *
- * @param {!function(?, ?)} callback Callback function, to be executed
- *   when an HTTP request is successfully made.
  * @constructor
  */
-var AbstractScraper = function(callback) {
+var AbstractScraper = function() {
 	/**
 	 * Status code of the requested page.
 	 *
@@ -24,15 +23,6 @@ var AbstractScraper = function(callback) {
 	 * @protected
 	 */
 	this.body = null;
-	/**
-	 * Function to be called when the body is loaded. With two
-	 *   parameters, an error (or null if there was none) and this
-	 *   parser (or null if there was an error).
-	 *
-	 * @type {!function(?, ?)}
-	 * @private
-	 */
-	this.callback = callback || function() {};
 };
 AbstractScraper.prototype = {
 	constructor: AbstractScraper,
@@ -40,19 +30,24 @@ AbstractScraper.prototype = {
 	 * Executes an HTTP GET request to the given url.
 	 *
 	 * @param  {!string} url URL to request.
+	 * @param  {!function(Error=)} callback Function to call when the
+	 *   request is done. If the request was successful then it's
+	 *   called with no arguments or null argument. Otherwise, if
+	 *   there was an error the it's called with one argument not
+	 *   null, that should be an error instance.
 	 * @return {!AbstractScraper} This scraper.
 	 * @public
 	 */
-	get: function(url) {
+	get: function(url, callback) {
 		var that = this;
 		request.get(url, function processGet(error, response, body) {
 			that.statusCode = response.statusCode;
 			that.body = body;
 			if (error) {
-				that.callback(error, null);
+				callback(error);
 			} else {
 				that.loadBody(function() {
-					that.callback(null, that);
+					callback(null);
 				});
 			}
 		});
@@ -89,6 +84,14 @@ AbstractScraper.prototype = {
 	 * @public
 	 */
 	scrape: function(scraperFn, callbackFn) {}
+};
+
+AbstractScraper.create = function(ScraperType, url) {
+	var promise = new ScraperPromise(new ScraperType());
+	if (url) {
+		promise.get(url);
+	}
+	return promise;
 };
 
 module.exports = AbstractScraper;

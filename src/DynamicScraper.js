@@ -8,8 +8,8 @@ var phantom = require('phantom'),
  *
  * @extends {AbstractScraper}
  */
-var DynamicScraper = function(callback) {
-	AbstractScraper.call(this, callback);
+var DynamicScraper = function() {
+	AbstractScraper.call(this);
 	/**
 	 * Phantom instance.
 	 *
@@ -88,4 +88,7 @@ DynamicScraper.prototype.scrape = function(scraperFn, callbackFn) {
 	return this;
 };
 
+DynamicScraper.create = function(url) {
+	return AbstractScraper.create(DynamicScraper, url);
+};
 module.exports = DynamicScraper;

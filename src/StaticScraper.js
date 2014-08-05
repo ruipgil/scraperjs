@@ -8,8 +8,8 @@ var cheerio = require('cheerio'),
  *
  * @extends {AbstractScraper}
  */
-var StaticScraper = function(callback) {
-	AbstractScraper.call(this, callback);
+var StaticScraper = function() {
+	AbstractScraper.call(this);
 	/**
 	 * jQuery.
 	 *
@@ -46,6 +46,10 @@ StaticScraper.prototype.scrape = function(scraperFn, callbackFn) {
 		callbackFn(err, null);
 	}
 	return this;
+};
+
+StaticScraper.create = function(url) {
+	return AbstractScraper.create(StaticScraper, url);
 };
 
 module.exports = StaticScraper;

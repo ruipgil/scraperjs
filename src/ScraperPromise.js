@@ -3,14 +3,14 @@ var async = require('async');
 /**
  * @constructor
  */
-var ScraperPromise = function() {
+var ScraperPromise = function(scraper) {
 	/**
 	 * Scraper to use. This means that the promise can be recycled.
 	 *
 	 * @type {?Scraper}
 	 * @private
 	 */
-	this.scraper = null;
+	this.scraper = scraper || null;
 	/**
 	 * Promise chunks.
 	 *
@@ -174,6 +174,12 @@ ScraperPromise.prototype = {
 		this.errorCallback = callback;
 		return this;
 	},
+	get: function(url) {
+		var that = this;
+		this.scraper.get(url, function(err) {
+			that._fire(err);
+		});
+	},
 	/**
 	 * Starts the promise chain.
 	 *
@@ -182,9 +188,8 @@ ScraperPromise.prototype = {
 	 * @param  {!Scraper} scraper Scraper to use in the promise chain.
 	 * @protected
 	 */
-	_fire: function(error, scraper) {
+	_fire: function(error) {
 		var that = this;
-		this.scraper = scraper;
 
 		if (error) {
 			this.errorCallback(error);
