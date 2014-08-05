@@ -1,5 +1,5 @@
 var cheerio = require('cheerio'),
-	AbstractScraper = require('./abstractScraper');
+	AbstractScraper = require('./AbstractScraper');
 
 /**
  * A static scraper. This can only scrape static content, with the

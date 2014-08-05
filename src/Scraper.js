@@ -1,6 +1,6 @@
-var SimpleScraper = require('./staticScraper.js'),
-	DynamicScraper = require('./dynamicScraper.js'),
-	ScraperPromise = require('./scraperPromise.js');
+var SimpleScraper = require('./StaticScraper.js'),
+	DynamicScraper = require('./DynamicScraper.js'),
+	ScraperPromise = require('./ScraperPromise.js');
 
 function initScraper(type, url) {
 	var promise = new ScraperPromise();
