@@ -37,12 +37,39 @@ function pathToRegExp(path, keys) {
  * @constructor
  */
 var Router = function() {
+	/**
+	 * Chain of promises.
+	 *
+	 * @type {!Array.<!Object>}
+	 * @private
+	 */
 	this.promises = [];
+	/**
+	 * Otherwise promise.
+	 *
+	 * @type {!function(!string=)}
+	 * @private
+	 */
 	this.otherwiseFn = function() {};
+	/**
+	 * Error promise.
+	 *
+	 * @type {!function(!string=)}
+	 * @private
+	 */
 	this.errorFn = function() {};
 };
 Router.prototype = {
 	constructor: Router,
+	/**
+	 * Promise to url match. It's promise will fire only if the path
+	 *   matches with and url being routed.
+	 *
+	 * @param  {!(string|RegExp)} path The path to match an url. For
+	 *   more information on the path matching refer to {@link https://github.com/aaronblohowiak/routes.js/blob/76bc517037a0321507c4d84a0cdaca6db31ebaa4/README.md#path-formats}
+	 * @return {!Router} This router.
+	 * @public
+	 */
 	on: function(path) {
 		var pattern = null,
 			ids = ['url'];
@@ -71,14 +98,43 @@ Router.prototype = {
 		});
 		return this;
 	},
+	/**
+	 * On error promise. This promise fires when an error is thrown,
+	 *   at this level there shouldn't be any error.
+	 * This is a one time promise, which means that the last promise
+	 *   is gonna be the one to be executed, if needed be.
+	 *
+	 * @param  {!function(!string, ?)} callback Function with the url
+	 *   and the error as the parameters.
+	 * @return {!Router} This router.
+	 * @public
+	 */
 	onError: function(callback) {
 		this.errorFn = callback;
 		return this;
 	},
+	/**
+	 * A promise to be triggered when none of the paths where matched.
+	 * This is a one time promise, which means that the last promise
+	 *   is gonna be the one to be executed.
+	 *
+	 * @param  {!function(!string=)} callback Function with the url as
+	 *   a parameter.
+	 * @return {!Router} This router.
+	 * @public
+	 */
 	otherwise: function(callback) {
 		this.otherwiseFn = callback;
 		return this;
 	},
+	/**
+	 * Creates a static scraper, and associates it with the current
+	 *   router promise chain. Note that this method returns a
+	 *   {@see ScraperPromise} of a {@see StaticScraper}.
+	 *
+	 * @return {!ScraperPromise} A promise for the scraper.
+	 * @public
+	 */
 	createStatic: function() {
 		var length = this.promises.length,
 			last = this.promises[length - 1];
@@ -90,6 +146,14 @@ Router.prototype = {
 			throw new ScraperError('');
 		}
 	},
+	/**
+	 * Creates a dynamic scraper, and associates it with the current
+	 *   router promise chain. Note that this method returns a
+	 *   {@see ScraperPromise} of a {@see DynamicScraper}.
+	 *
+	 * @return {!ScraperPromise} A promise for the scraper.
+	 * @public
+	 */
 	createDynamic: function() {
 		var length = this.promises.length,
 			last = this.promises[length - 1];
@@ -101,6 +165,15 @@ Router.prototype = {
 			throw new ScraperError('');
 		}
 	},
+	/**
+	 * Routes a url through every path that matches it.
+	 *
+	 * @param  {!string} url The url to route.
+	 * @param  {!function()} callback Function to call when the
+	 *   routing is complete.
+	 * @return {!Router} This router.
+	 * @public
+	 */
 	route: function(url, callback) {
 		var atLeastOne = false;
 		var that = this;
@@ -125,6 +198,7 @@ Router.prototype = {
 			}
 			callback();
 		});
+		return this;
 	}
 };
 

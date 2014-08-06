@@ -5,7 +5,7 @@ var async = require('async');
  */
 var ScraperPromise = function(scraper) {
 	/**
-	 * Scraper to use. This means that the promise can be recycled.
+	 * Scraper to use..
 	 *
 	 * @type {?Scraper}
 	 * @private
@@ -184,14 +184,27 @@ ScraperPromise.prototype = {
 		this.errorCallback = callback;
 		return this;
 	},
+	/**
+	 * Makes an HTTP GET request to the url.
+	 *
+	 * @param  {!string} url Url to make the request.
+	 * @return {!ScraperPromise} This object, so that new promises can
+	 *   be made.
+	 * @public
+	 */
 	get: function(url) {
-		var that = this,
-			param = this.chainParameter;
-		this.chainParameter = null;
+		var that = this;
 		this.scraper.get(url, function(err) {
-			that._fire(err, param);
+			that._fire(err);
 		});
+		return this;
 	},
+	/**
+	 * Sets a parameter to be used in the next _fire call.
+	 *
+	 * @param {?Object} param Parameter.
+	 * @public
+	 */
 	_setChainParameter: function(param) {
 		this.chainParameter = param;
 	},
@@ -203,16 +216,18 @@ ScraperPromise.prototype = {
 	 * @param  {!Scraper} scraper Scraper to use in the promise chain.
 	 * @protected
 	 */
-	_fire: function(error, arbParam) {
+	_fire: function(error) {
 		var that = this,
+			param = this.chainParameter,
 			stopPointer = {},
 			utils = {
 				stop: function() {},
 				next: function() {},
 				scraper: this,
-				params: arbParam
+				params: param
 			},
 			keep = true;
+		this.chainParameter = null;
 
 		if (error) {
 			this.errorCallback(error);
