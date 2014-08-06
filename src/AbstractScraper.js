@@ -10,14 +10,21 @@ var request = require('request'),
  */
 var AbstractScraper = function() {
 	/**
-	 * Status code of the requested page.
+	 * Status code of the last requested page.
 	 *
 	 * @type {!number}
 	 * @protected
 	 */
 	this.statusCode = null;
 	/**
-	 * Body of the webpage, as a string.
+	 * Response of the last requested page.
+	 *
+	 * @type {!Object}
+	 * @protected
+	 */
+	this.response = null;
+	/**
+	 * Body of the last webpage, as a string.
 	 *
 	 * @type {!string}
 	 * @protected
@@ -27,7 +34,7 @@ var AbstractScraper = function() {
 AbstractScraper.prototype = {
 	constructor: AbstractScraper,
 	/**
-	 * Executes an HTTP GET request to the given url.
+	 * Executes a simple HTTP GET request to the given url.
 	 *
 	 * @param  {!string} url URL to request.
 	 * @param  {!function(Error=)} callback Function to call when the
@@ -41,6 +48,7 @@ AbstractScraper.prototype = {
 	get: function(url, callback) {
 		var that = this;
 		request.get(url, function processGet(error, response, body) {
+			that.response = response;
 			that.statusCode = response.statusCode;
 			that.body = body;
 			if (error) {
@@ -54,7 +62,38 @@ AbstractScraper.prototype = {
 		return this;
 	},
 	/**
-	 * Gets the status code of a request.
+	 * Executes an HTTP request to an url. This method allows for the
+	 *   powerful use of the request package {@link https://github.com/mikeal/request},
+	 *   since it's basically a wrapper around the method request.
+	 *   For more information about how it's used refer to {@link https://github.com/mikeal/request#requestoptions-callback}.
+	 *
+	 * @param  {!(Object|string)} options Options of the request.
+	 * @param  {!function(Error=)} callback Function to call when the
+	 *   request is done. If the request was successful then it's
+	 *   called with no arguments or null argument. Otherwise, if
+	 *   there was an error the it's called with one argument not
+	 *   null, that should be an error instance.
+	 * @return {!AbstractScraper} This scraper.
+	 * @public
+	 */
+	request: function(options, callback) {
+		var that = this;
+		request(options, function processRequest(error, response, body) {
+			that.response = response;
+			that.statusCode = response.statusCode;
+			that.body = body;
+			if (error) {
+				callback(error);
+			} else {
+				that.loadBody(function() {
+					callback(null);
+				});
+			}
+		});
+		return this;
+	},
+	/**
+	 * Gets the status code of the last request.
 	 *
 	 * @return {?number} The status code, if a there was a successful
 	 *   request, null otherwise.
@@ -62,6 +101,26 @@ AbstractScraper.prototype = {
 	 */
 	getStatusCode: function() {
 		return this.statusCode;
+	},
+	/**
+	 * Gets the response of the last request.
+	 *
+	 * @return {?number} The status code, if a there was a successful
+	 *   request, null otherwise.
+	 * @public
+	 */
+	getResponse: function() {
+		return this.response;
+	},
+	/**
+	 * Gets the body of the last request.
+	 *
+	 * @return {?number} The status code, if a there was a successful
+	 *   request, null otherwise.
+	 * @public
+	 */
+	getBody: function() {
+		return this.body;
 	},
 	/* jshint unused:false */
 	/**
@@ -85,7 +144,19 @@ AbstractScraper.prototype = {
 	 */
 	scrape: function(scraperFn, callbackFn) {}
 };
+/* jshint unused:true */
 
+/**
+ * Creates a scraper, based on a scraper type, and creates it's
+ *   promise.
+ *
+ * @param  {!AbstractScraper} ScraperType Some concrete implementation
+ *   of an abstract scraper.
+ * @param  {!string=} url Url to make an HTTP GET request.
+ * @return {!ScraperPromise} A scraper promise.
+ * @public
+ * @static
+ */
 AbstractScraper.create = function(ScraperType, url) {
 	var promise = new ScraperPromise(new ScraperType());
 	if (url) {

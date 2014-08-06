@@ -200,6 +200,22 @@ ScraperPromise.prototype = {
 		return this;
 	},
 	/**
+	 * Makes a (possible more complex) HTTP request. For more
+	 *   information refer to {@link https://github.com/mikeal/request#requestoptions-callback}.
+	 *
+	 * @param  {!Object} options Options of the request.
+	 * @return {!ScraperPromise} This object, so that new promises can
+	 *   be made.
+	 * @public
+	 */
+	request: function(options) {
+		var that = this;
+		this.scraper.request(options, function(err) {
+			that._fire(err);
+		});
+		return this;
+	},
+	/**
 	 * Sets a parameter to be used in the next _fire call.
 	 *
 	 * @param {?Object} param Parameter.

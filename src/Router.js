@@ -94,9 +94,35 @@ Router.prototype = {
 					return params;
 				}
 			},
-			scraper: null
+			scraper: null,
+			rqMethod: null
 		});
-		return this;
+		return this.get();
+	},
+	get: function() {
+		var length = this.promises.length,
+			last = this.promises[length - 1];
+		if (length && last) {
+			last.rqMethod = function(url) {
+				last.scraper.get(url);
+			};
+			return this;
+		} else {
+			throw new ScraperError('');
+		}
+	},
+	request: function(options) {
+		var length = this.promises.length,
+			last = this.promises[length - 1];
+		if (length && last) {
+			last.rqMethod = function(url) {
+				options.uri = url;
+				last.scraper.request(options);
+			};
+			return this;
+		} else {
+			throw new ScraperError('');
+		}
 	},
 	/**
 	 * On error promise. This promise fires when an error is thrown,
@@ -181,12 +207,14 @@ Router.prototype = {
 		async.each(this.promises, function(promiseObj, done) {
 
 			var promiseFn = promiseObj.callback,
-				scraperPromise = promiseObj.scraper;
+				scraperPromise = promiseObj.scraper,
+				reqMethod = promiseObj.rqMethod;
+			console.log(promiseObj);
 			var result = promiseFn(url);
 			if (result !== null) {
 				atLeastOne = true;
 				scraperPromise._setChainParameter(result);
-				scraperPromise.get(url);
+				reqMethod(url);
 			}
 			done();
 
