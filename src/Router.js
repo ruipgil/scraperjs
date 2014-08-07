@@ -209,7 +209,6 @@ Router.prototype = {
 			var promiseFn = promiseObj.callback,
 				scraperPromise = promiseObj.scraper,
 				reqMethod = promiseObj.rqMethod;
-			console.log(promiseObj);
 			var result = promiseFn(url);
 			if (result !== null) {
 				atLeastOne = true;
