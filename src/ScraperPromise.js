@@ -277,8 +277,8 @@ ScraperPromise.prototype = {
 			if (err && err !== stopPointer) {
 				that.errorCallback(err, utils);
 			}
-			that.scraper.close();
 			that.doneCallback(utils);
+			that.scraper.close();
 		});
 	}
 };
