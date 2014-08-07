@@ -1,1 +1,155 @@
-A complete web scraper.
+# Scraperjs
+Scraperjs is a web scraper module that make scraping the web an easy job.
+
+## Installing
+
+```
+npm install scraperjs
+```
+
+to test,
+```
+coming soon...
+```
+
+# Getting started
+
+Scraperjs exposes two different scrapers,
++ a **SimpleScraper**, that is light fast and with a low footprint, however it doesn't allow for more complex situations, like scraping dynamic content.
++ a **DynamicScraper**, that is a bit more heavy, but allows you to scrape dynamic content, like in the browser console.
+both scrapers expose a *very* similar API, with some minor differences when it comes to scraping.
+
+## Lets scrape [Hacker News](https://news.ycombinator.com/), with both scrapers.
+
+Try to spot the differences.
+
+### Static Scraper
+
+```javascript
+var scraperjs = require('scraperjs');
+scraperjs.createStatic('https://news.ycombinator.com/')
+	.scrape(function($) {
+		return $(".title a").map(function() {
+			return $(this).text();
+		}).get();
+	}, function(news) {
+		console.log(news);
+	})
+```
+
+The ```scrape``` promise receives two functions, the first will scrape the page and return the result. The second will receive re result of the scraping.
+This scraper function only receives jQuery a parameter to scrape the page. Still, very powerful. It uses [cheerio]() to do the magic behind the scenes.
+
+### Dynamic Scraper
+
+```javascript
+var scraperjs = require('scraperjs');
+scraperjs.createDynamic('https://news.ycombinator.com/')
+	.scrape(function() {
+		return $(".title a").map(function() {
+			return $(this).text();
+		}).get();
+	}, function(news) {
+		console.log(news);
+	})
+```
+
+Again, the ```scrape``` promise receives two functions, the only difference is that, because we're using a dynamic scraper, the scraping function is [sandboxed]() only with the page scope, so **no closures(!)**. This means that in *this* (and only in this) scraper you can't call a function that has not been defined inside the scraping function. Also, the result of the scraping function must be [JSON-serializable]().
+We use [phantom]() and [phantomjs]() to make it happen, we also inject jQuery for you.
+
+## Show me the way! (aka Routes)
+
+For a more flexible scraping and crawling of the web sometimes we need to go through multiple web sites and we don't want map every possible url format. For that scraperjs provides the Router class.
+
+### Example
+
+```javascript
+var scraperjs = require('scraperjs'),
+	router = new scraperjs.Router();
+
+router
+	.otherwise(function(url) {
+	console.log("Url '"+url+"' couldn't be routed.");
+});
+
+var path = {};
+
+router.on('https?://(www.)?youtube.com/watch/:id')
+	.createStatic()
+	.scrape(function($) {
+		return $("a").map(function() {
+			return $(this).attr("href");
+		}).get();
+	}, function(links, utils) {
+		path[utils.params.id] = links
+	})
+
+router.route("https://www.youtube.com/watch?v=YE7VzlLtp-4");
+```
+
+Code that allows for parameters in paths is from the project [Routes.js](https://github.com/aaronblohowiak/routes.js), information about the [path formating]() is there too.
+
+# API overview
+
+Scraperjs uses promises whenever possible.
+
+#### StaticScraper, DynamicScraper and ScraperPromise
+
+So, the scrapers should be used with the ScraperPromise. By creating a scraper
+```javascript
+var scraperPromise = scraperjs.StaticScraper.create() // or DynamicScraper
+```
+The following promises can be made over it, they all return a scraper promise,
++ ```onStatusCode(code:number, callback:function(utils))```, executes the callback when the status code is equal to the code,
++ ```onStatusCode(callback:function(code:number, utils))```, executes the callback when receives the status code. The callback receives the current status code,
++ ```delay(time:number, callback:function(utils))```, delays the execution of the chain by time milliseconds,
++ ```timeout(time:number, callback:function(utils))```, executes the callback function after time milliseconds,
++ ```then(callback:function(utils))```, executes the callback after the last promise,
++ ```onError(callback:function(utils))```, executes the callback when there was an error, errors block the execution of the chain even if the promise was not defined,
++ ```done(callback:function(utils))```, executes the callback at the end of the promise chain, this is always executed, even if there was an error,
++ ```get(url:string)```, makes a simple HTTP GET request to the url. This promise should be used only once per scraper.
++ ```request(options:Object)```, makes a (possibly) more complex HTTP request, scraperjs uses the [request]() module, and this method is a simple wrapper of ```request.request()```. This promise should be used only once per scraper.
++ ```scrape(scrapeFn:function(?), callback:function(result:?, utils))```, scrapes the page. It executes the scrapeFn and passes it's result to the callback. When using the StaticScraper, the scrapeFn receives a jQuery function that is used to scrape the page. When using the DynamicScraper, the scrapeFn doesn't receive nothing and can only return a [JSON-serializable]() type.
+
+All callback functions receive as their last parameter a utils object, with it the parameters of an url from a router can be accessed. Also the chain can be stopped.
+```javascript
+DynamicScraper.create()
+	.get("http://news.ycombinator.com")
+	.then(function(utils) {
+		utils.stop();
+		// utils.params.paramName
+	});
+```
+
+The promise chain is fired with the same sequence it was declared, with the exception of the promises get and request that fire the chain when they've received a valid response, and the promises done and onError, which were explained above.
+
+#### Router
+
+The router should be initialized like a class
+```javascript
+var router = new scraperjs.Router();
+```
+
+The following promises can be made over it,
++ ```on(path:string)```, makes the promise for the match url, the promises ```get``` or ```request``` and ```createStatic``` or ```createDynamic``` are expected after the on promise.
++ ```get()```, makes so that the page matched will be requested with a simple HTTP request,
++ ```request(options:Object)```, makes so that the page matched will be requested with a possible more complex HTTP request, , scraperjs uses the [request]() module, and this method is a simple wrapper of [request.request()](),
++ ```createStatic()```, associates a static scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a StaticScraper. Also the done promise of the scraper will not be available.
++ ```createDynamic()```, associates a dynamic scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a DynamicScraper. Also the done promise of the scraper will not be available.
++ ```route(url:string, callback:function())```, routes an url through all matched paths, calls the callback when it's executed,
++ ```otherwise(callback:function(url:string))```, executes the callback function if the routing url didn't match any path.
++ ```onError(callback:function(url:string, error:Error))```, executes the callback when an error occurred on the routing scope, not on any scraper, for that situations you should use the onError promise of the scraper.
+
+# Dependencies
+
+As mentioned above, scraperjs is uses some dependencies to do the the heavy work, such as
++ [```async```](), for flow control
++ [```request```](), to make HTTP requests, again, if you want more complex requests see it's documentation
++ [```phantom```]() + [```phantomjs```](), phantom is an awesome module that links node to phantom, used in the DynamicScraper
++ [```cheerio```](), light and fast DOM manipulation, used to implement the StaticScraper
++ [```jquery```](), to include jquery in the DynamicScraper
++ although [```Routes.js```]() is great, however scraperjs doesn't use it to maintain it's "interface layout", but the code to transform the path given on the on promise to regular expressions is from them
+
+# License
+
+This project is under the [MIT]() license. 
