@@ -72,20 +72,21 @@ DynamicScraper.prototype.loadBody = function(done) {
 DynamicScraper.prototype.scrape = function(scraperFn, callbackFn) {
 	var that = this;
 
-	function close() {
-		that.page.close();
-		that.ph.exit();
-	}
-
 	if (this.error) {
-		close();
 		return callbackFn(that.error, null);
 	}
 	this.page.evaluate(scraperFn, function(result) {
-		close();
 		callbackFn(null, result);
 	});
 	return this;
+};
+/**
+ * @override
+ * @inheritDoc
+ */
+DynamicScraper.prototype.close = function() {
+	this.page.close();
+	this.ph.exit();
 };
 
 DynamicScraper.create = function(url) {

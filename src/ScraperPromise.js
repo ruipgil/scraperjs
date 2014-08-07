@@ -106,13 +106,14 @@ ScraperPromise.prototype = {
 	 *
 	 * @param  {!number} time Time in milliseconds to delay the
 	 *   execution.
-	 * @param  {!function()} callback Function to call after the
+	 * @param  {!function()=} callback Function to call after the
 	 *   delay.
 	 * @return {!ScraperPromise} This object, so that new promises can
 	 *   be made.
 	 * @public
 	 */
 	delay: function(time, callback) {
+		callback = callback || function() {};
 		this.promises.push(function delay(done, utils) {
 			setTimeout(function() {
 				callback(utils);
@@ -272,10 +273,11 @@ ScraperPromise.prototype = {
 				done(err);
 			}
 		}, function(err) {
+			utils.stop = function() {};
 			if (err && err !== stopPointer) {
 				that.errorCallback(err, utils);
 			}
-			utils.stop = function() {};
+			that.scraper.close();
 			that.doneCallback(utils);
 		});
 	}

@@ -142,7 +142,13 @@ AbstractScraper.prototype = {
 	 * @return {!AbstractScraper} This scraper.
 	 * @public
 	 */
-	scrape: function(scraperFn, callbackFn) {}
+	scrape: function(scraperFn, callbackFn) {},
+	/**
+	 * Closes the scraper.
+	 *
+	 * @public
+	 */
+	close: function() {}
 };
 /* jshint unused:true */
 

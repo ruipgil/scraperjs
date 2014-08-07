@@ -47,6 +47,11 @@ StaticScraper.prototype.scrape = function(scraperFn, callbackFn) {
 	}
 	return this;
 };
+/**
+ * @override
+ * @inheritDoc
+ */
+StaticScraper.prototype.close = function() {};
 
 StaticScraper.create = function(url) {
 	return AbstractScraper.create(StaticScraper, url);
