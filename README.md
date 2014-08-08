@@ -133,7 +133,7 @@ var router = new scraperjs.Router();
 ```
 
 The following promises can be made over it,
-+ ```on(path:string)```, makes the promise for the match url, the promises ```get``` or ```request``` and ```createStatic``` or ```createDynamic``` are expected after the on promise.
++ ```on(path:string|RegExp)```, makes the promise for the match url or regular expression, the promises ```get``` or ```request``` and ```createStatic``` or ```createDynamic``` are expected after the on promise.
 + ```get()```, makes so that the page matched will be requested with a simple HTTP request,
 + ```request(options:Object)```, makes so that the page matched will be requested with a possible more complex HTTP request, , scraperjs uses the [request](https://github.com/mikeal/request) module, and this method is a simple wrapper of [request.request()](https://github.com/mikeal/request#requestoptions-callback),
 + ```createStatic()```, associates a static scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a StaticScraper. Also the done promise of the scraper will not be available.
@@ -158,4 +158,4 @@ As mentioned above, scraperjs is uses some dependencies to do the the heavy work
 
 # License
 
-This project is under the [MIT]() license. 
+This project is under the [MIT](./LICENCE) license. 
