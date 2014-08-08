@@ -38,7 +38,7 @@ scraperjs.createStatic('https://news.ycombinator.com/')
 ```
 
 The ```scrape``` promise receives two functions, the first will scrape the page and return the result. The second will receive re result of the scraping.
-This scraper function only receives jQuery a parameter to scrape the page. Still, very powerful. It uses [cheerio]() to do the magic behind the scenes.
+This scraper function only receives jQuery a parameter to scrape the page. Still, very powerful. It uses [cheerio](https://github.com/cheeriojs/cheerio) to do the magic behind the scenes.
 
 ### Dynamic Scraper
 
@@ -54,8 +54,8 @@ scraperjs.createDynamic('https://news.ycombinator.com/')
 	})
 ```
 
-Again, the ```scrape``` promise receives two functions, the only difference is that, because we're using a dynamic scraper, the scraping function is [sandboxed]() only with the page scope, so **no closures(!)**. This means that in *this* (and only in this) scraper you can't call a function that has not been defined inside the scraping function. Also, the result of the scraping function must be [JSON-serializable]().
-We use [phantom]() and [phantomjs]() to make it happen, we also inject jQuery for you.
+Again, the ```scrape``` promise receives two functions, the only difference is that, because we're using a dynamic scraper, the scraping function is [sandboxed](https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages) only with the page scope, so **no closures(!)**. This means that in *this* (and only in this) scraper you can't call a function that has not been defined inside the scraping function. Also, the result of the scraping function must be [JSON-serializable](https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages).
+We use [phantom](https://github.com/sgentle/phantomjs-node) and [phantomjs](https://github.com/ariya/phantomjs) to make it happen, we also inject jQuery for you.
 
 ## Show me the way! (aka Routes)
 
@@ -84,10 +84,12 @@ router.on('https?://(www.)?youtube.com/watch/:id')
 		path[utils.params.id] = links
 	})
 
-router.route("https://www.youtube.com/watch?v=YE7VzlLtp-4");
+router.route("https://www.youtube.com/watch?v=YE7VzlLtp-4", function() {
+	console.log("i'm done");
+});
 ```
 
-Code that allows for parameters in paths is from the project [Routes.js](https://github.com/aaronblohowiak/routes.js), information about the [path formating]() is there too.
+Code that allows for parameters in paths is from the project [Routes.js](https://github.com/aaronblohowiak/routes.js), information about the [path formating](https://github.com/aaronblohowiak/routes.js#path-formats) is there too.
 
 # API overview
 
@@ -108,8 +110,8 @@ The following promises can be made over it, they all return a scraper promise,
 + ```onError(callback:function(utils))```, executes the callback when there was an error, errors block the execution of the chain even if the promise was not defined,
 + ```done(callback:function(utils))```, executes the callback at the end of the promise chain, this is always executed, even if there was an error,
 + ```get(url:string)```, makes a simple HTTP GET request to the url. This promise should be used only once per scraper.
-+ ```request(options:Object)```, makes a (possibly) more complex HTTP request, scraperjs uses the [request]() module, and this method is a simple wrapper of ```request.request()```. This promise should be used only once per scraper.
-+ ```scrape(scrapeFn:function(?), callback:function(result:?, utils))```, scrapes the page. It executes the scrapeFn and passes it's result to the callback. When using the StaticScraper, the scrapeFn receives a jQuery function that is used to scrape the page. When using the DynamicScraper, the scrapeFn doesn't receive nothing and can only return a [JSON-serializable]() type.
++ ```request(options:Object)```, makes a (possibly) more complex HTTP request, scraperjs uses the [request](https://github.com/mikeal/request) module, and this method is a simple wrapper of ```request.request()```. This promise should be used only once per scraper.
++ ```scrape(scrapeFn:function(?), callback:function(result:?, utils))```, scrapes the page. It executes the scrapeFn and passes it's result to the callback. When using the StaticScraper, the scrapeFn receives a jQuery function that is used to scrape the page. When using the DynamicScraper, the scrapeFn doesn't receive nothing and can only return a [JSON-serializable](https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages) type.
 
 All callback functions receive as their last parameter a utils object, with it the parameters of an url from a router can be accessed. Also the chain can be stopped.
 ```javascript
@@ -133,22 +135,26 @@ var router = new scraperjs.Router();
 The following promises can be made over it,
 + ```on(path:string)```, makes the promise for the match url, the promises ```get``` or ```request``` and ```createStatic``` or ```createDynamic``` are expected after the on promise.
 + ```get()```, makes so that the page matched will be requested with a simple HTTP request,
-+ ```request(options:Object)```, makes so that the page matched will be requested with a possible more complex HTTP request, , scraperjs uses the [request]() module, and this method is a simple wrapper of [request.request()](),
++ ```request(options:Object)```, makes so that the page matched will be requested with a possible more complex HTTP request, , scraperjs uses the [request](https://github.com/mikeal/request) module, and this method is a simple wrapper of [request.request()](https://github.com/mikeal/request#requestoptions-callback),
 + ```createStatic()```, associates a static scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a StaticScraper. Also the done promise of the scraper will not be available.
 + ```createDynamic()```, associates a dynamic scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a DynamicScraper. Also the done promise of the scraper will not be available.
 + ```route(url:string, callback:function())```, routes an url through all matched paths, calls the callback when it's executed,
 + ```otherwise(callback:function(url:string))```, executes the callback function if the routing url didn't match any path.
 + ```onError(callback:function(url:string, error:Error))```, executes the callback when an error occurred on the routing scope, not on any scraper, for that situations you should use the onError promise of the scraper.
 
+#### More
+
+Check the [API]() or dig into the code, it's well documented and simple to understand.
+
 # Dependencies
 
 As mentioned above, scraperjs is uses some dependencies to do the the heavy work, such as
-+ [```async```](), for flow control
-+ [```request```](), to make HTTP requests, again, if you want more complex requests see it's documentation
-+ [```phantom```]() + [```phantomjs```](), phantom is an awesome module that links node to phantom, used in the DynamicScraper
-+ [```cheerio```](), light and fast DOM manipulation, used to implement the StaticScraper
-+ [```jquery```](), to include jquery in the DynamicScraper
-+ although [```Routes.js```]() is great, however scraperjs doesn't use it to maintain it's "interface layout", but the code to transform the path given on the on promise to regular expressions is from them
++ [```async```](https://github.com/caolan/async), for flow control
++ [```request```](https://github.com/mikeal/request), to make HTTP requests, again, if you want more complex requests see it's [documentation](https://github.com/mikeal/request#requestoptions-callback)
++ [```phantom```](https://github.com/sgentle/phantomjs-node) + [```phantomjs```](https://github.com/ariya/phantomjs), phantom is an awesome module that links node to phantom, used in the DynamicScraper
++ [```cheerio```](https://github.com/cheeriojs/cheerio), light and fast DOM manipulation, used to implement the StaticScraper
++ [```jquery```](https://github.com/jquery/jquery), to include jquery in the DynamicScraper
++ although [```Routes.js```](https://github.com/aaronblohowiak/routes.js) is great, however scraperjs doesn't use it to maintain it's "interface layout", but the code to transform the path given on the on promise to regular expressions is from them
 
 # License
 
