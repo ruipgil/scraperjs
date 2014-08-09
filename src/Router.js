@@ -65,35 +65,27 @@ Router.prototype = {
 	 * Promise to url match. It's promise will fire only if the path
 	 *   matches with and url being routed.
 	 *
-	 * @param  {!(string|RegExp)} path The path to match an url. For
-	 *   more information on the path matching refer to {@link https://github.com/aaronblohowiak/routes.js/blob/76bc517037a0321507c4d84a0cdaca6db31ebaa4/README.md#path-formats}
+	 * @param  {!(string|RegExp|function(string):?)} path The
+	 *   path or regular expression to match an url.
+	 *   Alternatively a function that receives the url to be matched
+	 *   can be passed. If the result is false, or any
+	 *   !!result===false), the path is considered valid and the
+	 *   scraping should be done. If ,in case of a valid path, an Object is returned, it will be associated with the params of this
+	 *   route/path.
+	 *   For more information on the path matching refer to {@link https://github.com/aaronblohowiak/routes.js/blob/76bc517037a0321507c4d84a0cdaca6db31ebaa4/README.md#path-formats}
 	 * @return {!Router} This router.
 	 * @public
 	 */
 	on: function(path) {
-		var pattern = null,
-			ids = ['url'];
-		if (path instanceof RegExp) {
-			pattern = path;
-		} else if (typeof path === 'string') {
-			pattern = pathToRegExp(path, ids);
-		} else {
-			throw new ScraperError('Invalid path.');
+		var callback;
+		if (typeof path === 'function') {
+			callback = path;
 		}
 
 		this.promises.push({
-			callback: function(url) {
-				var match = pattern.exec(url);
-				if (!match) {
-					return null;
-				} else {
-					var params = {};
-					ids.forEach(function(id, index) {
-						params[id] = match[index];
-					});
-					return params;
-				}
-			},
+			callback: callback ? function(url) {
+				return callback(url);
+			} : Router.pathMatcher(path),
 			scraper: null,
 			rqMethod: null
 		});
@@ -211,7 +203,7 @@ Router.prototype = {
 				scraperPromise = promiseObj.scraper,
 				reqMethod = promiseObj.rqMethod;
 			var result = promiseFn(url);
-			if (result !== null) {
+			if (result) {
 				atLeastOne = true;
 				scraperPromise._setChainParameter(result);
 				reqMethod(url);
@@ -228,6 +220,32 @@ Router.prototype = {
 		});
 		return this;
 	}
+};
+
+Router.pathMatcher = function(pathOrRE) {
+	var pattern,
+		keys = ['url'];
+	if (pathOrRE instanceof RegExp) {
+		pattern = pathOrRE;
+	} else if (typeof pathOrRE === 'string') {
+		pattern = pathToRegExp(pathOrRE, keys);
+	} else {
+		throw new Error('A path must be a string or a regular expression.');
+	}
+
+	return function patternMatchingFunction(url) {
+		var match = pattern.exec(url);
+		if (!match) {
+			return false;
+		} else if (match instanceof Object) {
+			return keys.reduce(function(obj, value, index) {
+				obj[value] = match[index];
+				return obj;
+			}, {});
+		} else {
+			return {};
+		}
+	};
 };
 
 module.exports = Router;
