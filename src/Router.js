@@ -195,8 +195,9 @@ Router.prototype = {
 	 * Routes a url through every path that matches it.
 	 *
 	 * @param  {!string} url The url to route.
-	 * @param  {!function()} callback Function to call when the
-	 *   routing is complete.
+	 * @param  {!function(boolean)} callback Function to call when the
+	 *   routing is complete. If any of the paths was found the
+	 *   parameter is true, false otherwise.
 	 * @return {!Router} This router.
 	 * @public
 	 */
@@ -223,7 +224,7 @@ Router.prototype = {
 			} else if (!atLeastOne) {
 				that.otherwiseFn(url);
 			}
-			callback();
+			callback(atLeastOne);
 		});
 		return this;
 	}
