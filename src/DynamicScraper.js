@@ -66,18 +66,29 @@ DynamicScraper.prototype.loadBody = function(done) {
  *   own scope), and only JSON serializable information can be return
  *   by the function. For more information {@link https://github.com/sgentle/phantomjs-node}.
  *
+ * @param  {!function(...?)} scraperFn Function to scrape the content.
+ *   It receives the args as parameters, if passed.
+ * @param  {!function(?)} callbackFn Function that receives the
+ *   result of the scraping.
+ * @param  {!Array=} args Additional arguments to pass to the scraping
+ *   function. They must be JSON serializable.
+ * @return {!AbstractScraper} This scraper.
  * @override
- * @inheritDoc
+ * @public
  */
-DynamicScraper.prototype.scrape = function(scraperFn, callbackFn) {
+DynamicScraper.prototype.scrape = function(scraperFn, callbackFn, args) {
 	var that = this;
-
 	if (this.error) {
 		return callbackFn(that.error, null);
 	}
-	this.page.evaluate(scraperFn, function(result) {
+
+	args = args || [];
+	args.unshift(function(result) {
 		callbackFn(null, result);
 	});
+	args.unshift(scraperFn);
+
+	this.page.evaluate.apply(this.page, args);
 	return this;
 };
 /**

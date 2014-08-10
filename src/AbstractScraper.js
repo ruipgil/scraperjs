@@ -136,13 +136,16 @@ AbstractScraper.prototype = {
 	/**
 	 * Scrapes the webpage. According to a function, and a callback.
 	 *
-	 * @param  {!function()} scraperFn Function to scrape the content.
+	 * @param  {!function(...?)} scraperFn Function to scrape the
+	 *   content.
 	 * @param  {!function(?)} callbackFn Function that receives the
 	 *   result of the scraping.
+	 * @param  {!Array} args Aditional arguments to pass to the
+	 *   scraping function.
 	 * @return {!AbstractScraper} This scraper.
 	 * @public
 	 */
-	scrape: function(scraperFn, callbackFn) {},
+	scrape: function(scraperFn, callbackFn, args) {},
 	/**
 	 * Closes the scraper.
 	 *

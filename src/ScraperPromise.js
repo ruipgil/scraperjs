@@ -83,12 +83,15 @@ ScraperPromise.prototype = {
 	 *   webpage. The parameters depend on what kind of scraper.
 	 * @param  {!function(?)} callback Callback function with the
 	 *   result of the scraping function.
+	 * @param  {...?} var_args Optional arguments to pass as
+	 *   parameters to the scraping function.
 	 * @return {!ScraperPromise} This object, so that new promises can
 	 *   be made.
 	 * @public
 	 */
 	scrape: function(scrapeFn, callback) {
-		var that = this;
+		var that = this,
+			extraArguments = Array.prototype.slice.call(arguments, 2);
 		this.promises.push(function scrape(done, utils) {
 			that.scraper.scrape(scrapeFn, function(err, result) {
 				if (err) {
@@ -97,7 +100,7 @@ ScraperPromise.prototype = {
 					callback(result, utils);
 					done();
 				}
-			});
+			}, extraArguments);
 		});
 		return this;
 	},
