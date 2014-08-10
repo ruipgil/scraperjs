@@ -283,6 +283,30 @@ ScraperPromise.prototype = {
 			that.doneCallback(utils);
 			that.scraper.close();
 		});
+	},
+	/**
+	 * Sets the promises.
+	 *
+	 * @param {!Array.<function(function(?))>} promises Promises array.
+	 * @public
+	 */
+	_setPromises: function(promises) {
+		this.promises = promises;
+	},
+	/**
+	 * Clones the promise and the scraper.
+	 *
+	 * @return {!ScraperPromise} Scraper promise with an empty scraper
+	 *   clone.
+	 * @public
+	 */
+	clone: function() {
+		var instance = this.scraper.clone(),
+			promise = new ScraperPromise(instance);
+		promise._setPromises(this.promises);
+		promise.done(this.doneCallback);
+		promise.onError(this.errorCallback);
+		return promise;
 	}
 };
 

@@ -58,6 +58,13 @@ StaticScraper.prototype.scrape = function(scraperFn, callbackFn, args) {
  * @inheritDoc
  */
 StaticScraper.prototype.close = function() {};
+/**
+ * @override
+ * @inheritDoc
+ */
+StaticScraper.prototype.clone = function() {
+	return new StaticScraper();
+};
 
 StaticScraper.create = function(url) {
 	return AbstractScraper.create(StaticScraper, url);

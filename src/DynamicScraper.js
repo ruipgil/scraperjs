@@ -99,6 +99,13 @@ DynamicScraper.prototype.close = function() {
 	this.page.close();
 	this.ph.exit();
 };
+/**
+ * @override
+ * @inheritDoc
+ */
+DynamicScraper.prototype.clone = function() {
+	return new DynamicScraper();
+};
 
 DynamicScraper.create = function(url) {
 	return AbstractScraper.create(DynamicScraper, url);

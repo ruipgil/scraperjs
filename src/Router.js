@@ -194,8 +194,9 @@ Router.prototype = {
 		}
 	},
 	/**
-	 * Associates the current route with the a scraper instance. Keep
-	 *   in mind that the done promise will not be available.
+	 * Associates the current route with the a scraper (promise)
+	 *   instance. Keep in mind that the done promise will not be
+	 *   available.
 	 *
 	 * @param  {!AbstractScraper} scraper A scraper instance to use.
 	 * @return {!Router} This router.
@@ -248,10 +249,11 @@ Router.prototype = {
 		async.eachSeries(this.promises, function(promiseObj, done) {
 
 			var matcher = promiseObj.callback,
-				scraper = promiseObj.scraper,
+				scraper,
 				reqMethod = promiseObj.rqMethod;
 			var result = matcher(url);
 			if (!!result) {
+				scraper = promiseObj.scraper.clone();
 				atLeastOne = true;
 				scraper._setChainParameter(result);
 				scraper.done(function() {
@@ -263,16 +265,12 @@ Router.prototype = {
 			}
 
 		}, function(err) {
-			if (err === stopFlag) {
-				callback(atLeastOne);
-			} else if (err) {
+			if (err && err !== stopFlag) {
 				that.errorFn(err);
 			} else if (!atLeastOne) {
 				that.otherwiseFn(url);
-				callback(atLeastOne);
-			} else {
-				callback(atLeastOne);
 			}
+			callback(atLeastOne);
 		});
 		return this;
 	}

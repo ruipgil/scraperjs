@@ -151,7 +151,14 @@ AbstractScraper.prototype = {
 	 *
 	 * @public
 	 */
-	close: function() {}
+	close: function() {},
+	/**
+	 * Clones the scraper
+	 *
+	 * @return {AbstractScraper} Empty clone.
+	 * @public
+	 */
+	clone: function() {}
 };
 /* jshint unused:true */
 
