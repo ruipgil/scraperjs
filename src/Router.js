@@ -34,9 +34,23 @@ function pathToRegExp(path, keys) {
 }
 
 /**
+ * Routes an url thought a valid, predefined, path.
+ *
+ * @param {!Object=} options Setup options.
+ * @param {!boolean=} options.firstMatch If true the router will stop
+ *   at the first path matched. The default is false, and tries to
+ *   match every path.
  * @constructor
  */
-var Router = function() {
+var Router = function(options) {
+	options = options || {};
+	/**
+	 * Stops routing at first successful match.
+	 *
+	 * @type {!boolean}
+	 * @private
+	 */
+	this.firstMatchStop = options.firstMatch || false;
 	/**
 	 * Chain of promises.
 	 *
@@ -91,6 +105,13 @@ Router.prototype = {
 		});
 		return this.get();
 	},
+	/**
+	 * Sets the request method to be a simple HTTP GET.
+	 * {@see AbstractScraper.get}
+	 *
+	 * @return {!Router} This router.
+	 * @public
+	 */
 	get: function() {
 		var length = this.promises.length,
 			last = this.promises[length - 1];
@@ -103,6 +124,14 @@ Router.prototype = {
 			throw new ScraperError('');
 		}
 	},
+	/**
+	 * Sets the request method to be according to the options.
+	 * {@see AbstractScraper.request}
+	 *
+	 * @param  {!Object} options Request options.
+	 * @return {!Router} This router.
+	 * @public
+	 */
 	request: function(options) {
 		var length = this.promises.length,
 			last = this.promises[length - 1];
@@ -194,34 +223,56 @@ Router.prototype = {
 	 * @public
 	 */
 	route: function(url, callback) {
-		var atLeastOne = false;
-		var that = this;
+		var that = this,
+			atLeastOne = false,
+			stopFlag = {};
 		callback = callback || function() {};
-		async.each(this.promises, function(promiseObj, done) {
+		async.eachSeries(this.promises, function(promiseObj, done) {
 
-			var promiseFn = promiseObj.callback,
-				scraperPromise = promiseObj.scraper,
+			var matcher = promiseObj.callback,
+				scraper = promiseObj.scraper,
 				reqMethod = promiseObj.rqMethod;
-			var result = promiseFn(url);
-			if (result) {
+			var result = matcher(url);
+			if (!!result) {
 				atLeastOne = true;
-				scraperPromise._setChainParameter(result);
+				scraper._setChainParameter(result);
+				scraper.done(function() {
+					done(that.firstMatchStop?stopFlag:undefined);
+				});
 				reqMethod(url);
+			} else {
+				done();
 			}
-			done();
 
 		}, function(err) {
-			if (err) {
+			if (err === stopFlag) {
+				callback(atLeastOne);
+			} else if (err) {
 				that.errorFn(err);
 			} else if (!atLeastOne) {
 				that.otherwiseFn(url);
+				callback(atLeastOne);
+			} else {
+				callback(atLeastOne);
 			}
-			callback(atLeastOne);
 		});
 		return this;
 	}
 };
-
+/**
+ * Creates a function to match a path against a string.
+ *
+ * @param  {!(string|RegExp)} pathOrRE Pattern to match, if it's a
+ *   string it will be transformed into a regular expression.
+ * @return {!function(string):(Object|booelan)} A matching function,
+ *   that given a string will check if it matches the path. If the
+ *   path has parameters it will return an object with the parameters
+ *   as keys and the values as the values of the parameters. An empty
+ *   object if there were no valid parameters or false if the path
+ *   doesn't match with the string.
+ * @public
+ * @static
+ */
 Router.pathMatcher = function(pathOrRE) {
 	var pattern,
 		keys = ['url'];
