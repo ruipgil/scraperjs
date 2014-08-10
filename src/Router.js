@@ -194,6 +194,24 @@ Router.prototype = {
 		}
 	},
 	/**
+	 * Associates the current route with the a scraper instance. Keep
+	 *   in mind that the done promise will not be available.
+	 *
+	 * @param  {!AbstractScraper} scraper A scraper instance to use.
+	 * @return {!Router} This router.
+	 * @public
+	 */
+	use: function(scraper) {
+		var length = this.promises.length,
+			last = this.promises[length - 1];
+		if (length && last && !last.scraper) {
+			last.scraper = scraper;
+			return this;
+		} else {
+			throw new ScraperError('');
+		}
+	},
+	/**
 	 * Creates a dynamic scraper, and associates it with the current
 	 *   router promise chain. Note that this method returns a
 	 *   {@see ScraperPromise} of a {@see DynamicScraper}.
@@ -237,7 +255,7 @@ Router.prototype = {
 				atLeastOne = true;
 				scraper._setChainParameter(result);
 				scraper.done(function() {
-					done(that.firstMatchStop?stopFlag:undefined);
+					done(that.firstMatchStop ? stopFlag : undefined);
 				});
 				reqMethod(url);
 			} else {
