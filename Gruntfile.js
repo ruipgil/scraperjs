@@ -58,7 +58,9 @@ module.exports = function(grunt) {
 		}
 	});
 
-	grunt.registerTask('express-test', ['start-express', 'mochaTest', 'stop-express', ]);
+	grunt.registerTask('express-test', ['jshint', 'start-express', 'mochaTest', 'stop-express', ]);
+
+	grunt.registerTask('test', ['express-test', ]);
 
 	grunt.registerTask('watch-all', ['start-express', 'watch', 'stop-express']);
 };
