@@ -116,8 +116,8 @@ Router.prototype = {
 		var length = this.promises.length,
 			last = this.promises[length - 1];
 		if (length && last) {
-			last.rqMethod = function(url) {
-				last.scraper.get(url);
+			last.rqMethod = function(scraper, url) {
+				scraper.get(url);
 			};
 			return this;
 		} else {
@@ -136,9 +136,9 @@ Router.prototype = {
 		var length = this.promises.length,
 			last = this.promises[length - 1];
 		if (length && last) {
-			last.rqMethod = function(url) {
+			last.rqMethod = function(scraper, url) {
 				options.uri = url;
-				last.scraper.request(options);
+				scraper.request(options);
 			};
 			return this;
 		} else {
@@ -259,7 +259,7 @@ Router.prototype = {
 				scraper.done(function() {
 					done(that.firstMatchStop ? stopFlag : undefined);
 				});
-				reqMethod(url);
+				reqMethod(scraper, url);
 			} else {
 				done();
 			}

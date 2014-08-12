@@ -59,16 +59,15 @@ ScraperPromise.prototype = {
 	 * @public
 	 */
 	onStatusCode: function(code, callback) {
-		var that = this;
 		if (typeof code == 'function') {
 			callback = code;
 			this.promises.push(function onGenericStatusCode(done, utils) {
-				callback(that.scraper.getStatusCode(), utils);
+				callback(this.scraper.getStatusCode(), utils);
 				done();
 			});
 		} else {
 			this.promises.push(function onStatusCode(done, utils) {
-				if (code === that.scraper.getStatusCode()) {
+				if (code === this.scraper.getStatusCode()) {
 					callback(utils);
 				}
 				done();
@@ -90,10 +89,9 @@ ScraperPromise.prototype = {
 	 * @public
 	 */
 	scrape: function(scrapeFn, callback) {
-		var that = this,
-			extraArguments = Array.prototype.slice.call(arguments, 2);
+		var extraArguments = Array.prototype.slice.call(arguments, 2);
 		this.promises.push(function scrape(done, utils) {
-			that.scraper.scrape(scrapeFn, function(err, result) {
+			this.scraper.scrape(scrapeFn, function(err, result) {
 				if (err) {
 					done(err);
 				} else {
@@ -273,7 +271,7 @@ ScraperPromise.prototype = {
 			};
 
 			try {
-				fn(done, utils);
+				fn.call(that, done, utils);
 			} catch (err) {
 				done(err);
 			}
