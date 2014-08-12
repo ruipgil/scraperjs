@@ -28,10 +28,10 @@ var ScraperPromise = function(scraper) {
 	/**
 	 * Function to call when there's an error.
 	 *
-	 * @type {!function(?)}
+	 * @type {?function(?)}
 	 * @private
 	 */
-	this.errorCallback = function() {};
+	this.errorCallback = null;
 	/**
 	 * A parameter object to be passed to the chain, at the _fire
 	 *   method. This should be set immediately before the call, and
@@ -176,8 +176,10 @@ ScraperPromise.prototype = {
 	},
 	/**
 	 * Sets a promise to when an error occur, note that an error will
-	 *   break the promise chain, so this one is the next and the last
-	 *   promise to be called (if the done promise is not set).
+	 *   break the promise chain, so this is the next promise to be
+	 *   called and if the done promise is not set the last. To avoid
+	 *   silent errors, if this promise is not defined the error will
+	 *   be thrown up.
 	 *
 	 * @param  {!function(?)} callback Callback.
 	 * @return {!ScraperPromise} This object, so that new promises can
@@ -277,11 +279,19 @@ ScraperPromise.prototype = {
 			}
 		}, function(err) {
 			utils.stop = function() {};
+			var trh = false;
 			if (err && err !== stopPointer) {
-				that.errorCallback(err, utils);
+				if (that.errorCallback) {
+					that.errorCallback(err, utils);
+				} else {
+					trh = true;
+				}
 			}
 			that.doneCallback(utils);
 			that.scraper.close();
+			if (trh) {
+				throw err;
+			}
 		});
 	},
 	/**
