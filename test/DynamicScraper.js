@@ -84,7 +84,7 @@ describe('DynamicScraper', function() {
 			.onStatusCode(function(code) {
 				assert.equal(code, 200);
 			})
-			.delay(1000, function() {})
+			.delay(100, function() {})
 			.scrape(function() {
 				return $('.dynamic').text();
 			}, function(result) {

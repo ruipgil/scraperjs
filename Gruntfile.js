@@ -1,5 +1,10 @@
-var express = require('express'),
-	fs = require('fs');
+var testServer = require('./test/setupServer');
+
+var MOCHA_TIMEOUT_S = 10,
+	MOCHA_OPTIONS = {
+		reporter: 'spec',
+		timeout: MOCHA_TIMEOUT_S*1000
+	};
 
 module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-mocha-test');
@@ -18,15 +23,19 @@ module.exports = function(grunt) {
 		mochaTest: {
 			staticScraper: {
 				src: 'test/StaticScraper.js',
-				options: {
-					reporter: 'spec'
-				}
+				options: MOCHA_OPTIONS
 			},
 			dynamicScraper: {
 				src: 'test/DynamicScraper.js',
-				options: {
-					reporter: 'spec'
-				}
+				options: MOCHA_OPTIONS
+			},
+			router: {
+				src: 'test/Router.js',
+				options: MOCHA_OPTIONS
+			},
+			all: {
+				src: ['test/*Scraper.js', 'test/Router.js'],
+				options: MOCHA_OPTIONS
 			}
 		}
 	});
@@ -34,22 +43,7 @@ module.exports = function(grunt) {
 	var server;
 
 	grunt.registerTask('start-express', 'Starts express testing server', function() {
-		var app = express(),
-			HN_CLONE = fs.readFileSync(__dirname + '/test/static/hacker-news-clone.html');
-
-		app.get('/hacker-news-clone', function(req, res) {
-			res.status(200);
-			res.send(HN_CLONE);
-		});
-
-		app.post('/hacker-news-clone', function(req, res) {
-			res.status(200);
-			res.send('<html><head></head><body><div id="POST_MESSAGE">random text</div></body></html>');
-		});
-
-		server = app.listen(3000, function() {
-			console.log('Listening on port %d', server.address().port);
-		});
+		server = testServer(grunt);
 	});
 
 	grunt.registerTask('stop-express', function() {
@@ -58,9 +52,9 @@ module.exports = function(grunt) {
 		}
 	});
 
-	grunt.registerTask('express-test', ['jshint', 'start-express', 'mochaTest', 'stop-express', ]);
+	grunt.registerTask('express-test', ['jshint', 'start-express', 'mochaTest:all', 'stop-express']);
 
-	grunt.registerTask('test', ['express-test', ]);
+	grunt.registerTask('test', ['express-test']);
 
 	grunt.registerTask('watch-all', ['start-express', 'watch', 'stop-express']);
 };
