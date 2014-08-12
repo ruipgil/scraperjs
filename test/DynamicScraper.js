@@ -1,4 +1,4 @@
-/* global describe, it */
+/* global describe, it, $ */
 var DynamicScraper = require('../src/Scraper').DynamicScraper,
 	assert = require('assert'),
 	HN_CLONE = 'http://localhost:3000/hacker-news-clone';
@@ -52,11 +52,12 @@ describe('DynamicScraper', function() {
 				.create()
 				.get(HN_CLONE)
 				.scrape(function() {
+					
 					return $('.title a').map(function() {
 						return $(this).text();
 					}).get();
 				}, function(news) {
-					assert.equal(news.length, 10);
+					assert.equal(news.length, 9);
 					done();
 				});
 		});
@@ -70,7 +71,7 @@ describe('DynamicScraper', function() {
 						return $(this).text();
 					}).get();
 				}, function(news) {
-					assert.equal(news.length, 10);
+					assert.equal(news.length, 9);
 					done();
 				}, '.title a');
 		});
@@ -83,12 +84,11 @@ describe('DynamicScraper', function() {
 			.onStatusCode(function(code) {
 				assert.equal(code, 200);
 			})
-			.scrape(function() {}, function() {})
-			.delay(5000, function() {})
+			.delay(1000, function() {})
 			.scrape(function() {
-				return $('.title').html();
+				return $('.dynamic').text();
 			}, function(result) {
-				assert.equal(result, 'inserted dynamicly');
+				assert.equal(result, 'Dynamic Content');
 				done();
 			});
 	});
