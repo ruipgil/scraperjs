@@ -1,6 +1,9 @@
-var phantom = require('phantom'),
+var phantomOrig = require('phantom'),
+	PhantomPoll = require('./PhantomPoll.js'),
+	phantom = phantomOrig,
 	AbstractScraper = require('./AbstractScraper'),
 	ScraperError = require('./ScraperError');
+
 /**
  * A dynamic scraper. This is a very versatile and powerful. This
  *   solution is a little heavier and slower than the {@see StaticScraper}.
@@ -109,5 +112,17 @@ DynamicScraper.prototype.clone = function() {
 
 DynamicScraper.create = function(url) {
 	return AbstractScraper.create(DynamicScraper, url);
+};
+
+DynamicScraper.startFactory = function() {
+	phantom = new PhantomPoll();
+	return DynamicScraper;
+};
+DynamicScraper.closeFactory = function() {
+	if (phantom instanceof PhantomPoll) {
+		phantom.close();
+	}
+	phantom = phantomOrig;
+	return DynamicScraper;
 };
 module.exports = DynamicScraper;
