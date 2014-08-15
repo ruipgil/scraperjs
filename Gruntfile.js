@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 				command: 'istanbul cover _mocha -- -t ' + MOCHA_TIMEOUT_MS + ' --root src/ test/'
 			},
 			coveralls: {
-				command: 'istanbul cover _mocha --report lcovonly -- -t ' + MOCHA_TIMEOUT_MS + ' --root src/ test/'
+				command: 'istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -t ' + MOCHA_TIMEOUT_MS + ' --root src/ test/'
 			}
 		},
 		clean: {
