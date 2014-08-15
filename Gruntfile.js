@@ -3,7 +3,7 @@ var testServer = require('./test/setupServer');
 var MOCHA_TIMEOUT_S = 10,
 	MOCHA_OPTIONS = {
 		reporter: 'spec',
-		timeout: MOCHA_TIMEOUT_S*1000
+		timeout: MOCHA_TIMEOUT_S * 1000
 	};
 
 module.exports = function(grunt) {
@@ -14,7 +14,7 @@ module.exports = function(grunt) {
 		watch: {
 			common: {
 				files: ['src/**/*.js', 'test/**/*.js'],
-				tasks: ['jshint', 'mochaTest']
+				tasks: ['test']
 			}
 		},
 		jshint: {
@@ -46,19 +46,19 @@ module.exports = function(grunt) {
 
 	var server;
 
-	grunt.registerTask('start-express', 'Starts express testing server', function() {
+	grunt.registerTask('serve', 'Starts express testing server', function() {
 		server = testServer(grunt);
 	});
 
-	grunt.registerTask('stop-express', function() {
+	grunt.registerTask('unserve', function() {
 		if (server) {
 			server.close();
 		}
 	});
 
-	grunt.registerTask('express-test', ['jshint', 'start-express', 'mochaTest:all', 'stop-express']);
+	grunt.registerTask('serve-and-test', ['serve', 'mochaTest:all', 'unserve']);
 
-	grunt.registerTask('test', ['express-test']);
+	grunt.registerTask('test', ['jshint', 'serve-and-test']);
 
-	grunt.registerTask('watch-all', ['start-express', 'watch', 'stop-express']);
+	grunt.registerTask('watch-all', ['serve', 'watch', 'unserve']);
 };
