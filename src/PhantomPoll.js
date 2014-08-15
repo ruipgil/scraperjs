@@ -41,6 +41,7 @@ PhantomPoll.prototype = {
 				that.waiting.forEach(function(callback) {
 					callback(ph);
 				});
+				that.waiting = [];
 			});
 		}
 	},
