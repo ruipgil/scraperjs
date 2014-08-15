@@ -101,6 +101,7 @@ DynamicScraper.prototype.scrape = function(scraperFn, callbackFn, args) {
 DynamicScraper.prototype.close = function() {
 	this.page.close();
 	this.ph.exit();
+	return this;
 };
 /**
  * @override

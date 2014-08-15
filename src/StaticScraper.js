@@ -57,7 +57,9 @@ StaticScraper.prototype.scrape = function(scraperFn, callbackFn, args) {
  * @override
  * @inheritDoc
  */
-StaticScraper.prototype.close = function() {};
+StaticScraper.prototype.close = function() {
+	return this;
+};
 /**
  * @override
  * @inheritDoc

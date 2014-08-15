@@ -149,13 +149,14 @@ AbstractScraper.prototype = {
 	/**
 	 * Closes the scraper.
 	 *
+	 * @return {!AbstractScraper} This scraper.
 	 * @public
 	 */
 	close: function() {},
 	/**
-	 * Clones the scraper
+	 * Clones the scraper.
 	 *
-	 * @return {AbstractScraper} Empty clone.
+	 * @return {!AbstractScraper} Empty clone.
 	 * @public
 	 */
 	clone: function() {}
