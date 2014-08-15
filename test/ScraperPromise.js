@@ -170,11 +170,71 @@ function exec(ScraperType) {
 		});
 	});
 
-	// done
-	// _setChainParameter
-	// _fire
-	// _setPromises
-	// clone
+	it('done', function(done) {
+		var s = new ScraperPromise(new ScraperType());
+		s.get(HN_CLONE);
+		var temp = s.done(function() {
+			done();
+		});
+		assert.ok(temp === s);
+	});
+
+	it('_setChainParameter', function() {
+		var s = new ScraperPromise(new ScraperType());
+		s._setChainParameter(5);
+		assert.equal(s.chainParameter, 5);
+	});
+
+	describe('_fire', function() {
+		it('without error', function(done) {
+			var s = new ScraperPromise(new ScraperType());
+			s.done(function() {
+				done();
+			});
+			s._fire();
+		});
+		it('with error', function(done) {
+			var c = 0;
+			var s = new ScraperPromise(new ScraperType())
+				.done(function() {
+					assert.equal(c, 1);
+					done();
+				})
+				.onError(function(err) {
+					c++;
+					assert.equal(err.message, 'msg');
+				});
+			s._fire(new Error('msg'));
+		});
+	});
+
+	it('_setPromises', function() {
+		var s = new ScraperPromise(new ScraperType());
+		var promises = [
+
+			function() {}
+		];
+		s._setPromises(promises);
+		assert.ok(s.promises === promises);
+	});
+
+	it('clone', function() {
+		var s = new ScraperPromise(new ScraperType())
+			.onError(function() {})
+			.done(function() {})
+			.then(function() {})
+			.onStatusCode(200, function() {})
+			.onStatusCode(function() {})
+			.timeout(10)
+			.delay(10);
+		var clone = s.clone();
+		assert.ok(clone instanceof ScraperPromise);
+		assert.ok(clone.promises === s.promises);
+		assert.ok(clone.scraper !== s.scraper);
+		assert.ok(clone.doneCallback === s.doneCallback);
+		assert.ok(clone.errorCallback === s.errorCallback);
+		assert.ok(clone.chainParameter === s.chainParameter);
+	});
 }
 
 describe('Scraper Promise', function() {

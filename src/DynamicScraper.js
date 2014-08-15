@@ -99,8 +99,12 @@ DynamicScraper.prototype.scrape = function(scraperFn, callbackFn, args) {
  * @inheritDoc
  */
 DynamicScraper.prototype.close = function() {
-	this.page.close();
-	this.ph.exit();
+	if (this.page) {
+		this.page.close();
+	}
+	if (this.ph) {
+		this.ph.exit();
+	}
 	return this;
 };
 /**
