@@ -171,4 +171,47 @@ describe('Router', function() {
 			assert.ok(found);
 		});
 	});
+
+	it('usage of params', function(done) {
+		var r = new Router();
+		r
+			.on(LH + '/info/:id')
+			.createStatic()
+			.then(function(utils) {
+				assert.ok(utils.params.id, '7623hgjfs73');
+			});
+		r.route(LH + '/info/7623hgjfs73', function(found) {
+			assert.ok(found);
+			done();
+		});
+	});
+
+	describe('instantiation', function() {
+		function testCase(firstMatch, expected) {
+			it('with' + (firstMatch ? '' : 'out') + ' firstMatch', function(done) {
+				var c = 0;
+				var r = new Router({
+					firstMatch: !!firstMatch
+				});
+				r.on(LH + '/info/:id')
+					.createStatic()
+					.then(function() {
+						c++;
+					});
+				r.on(LH + '/info/:id')
+					.createStatic()
+					.then(function() {
+						c++;
+					});
+				r.route(LH + '/info/7623hgjfs73', function(found) {
+					assert.ok(found);
+					assert.equal(c, expected);
+					done();
+				});
+			});
+		}
+
+		testCase(true, 1);
+		testCase(false, 2);
+	});
 });
