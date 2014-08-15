@@ -1,144 +1,65 @@
 /* global describe, it, $ */
-var DynamicScraper = require('../src/Scraper').DynamicScraper,
+var sjs = require('../src/Scraper'),
+	ScraperPromise = sjs.ScraperPromise,
+	DynamicScraper = sjs.DynamicScraper,
 	assert = require('assert'),
 	HN_CLONE = 'http://localhost:3000/hacker-news-clone';
 
 
 describe('DynamicScraper', function() {
 
-	describe('create', function() {
+	describe('#create', function() {
 		it('with argument', function(done) {
-			DynamicScraper
-				.create(HN_CLONE)
+			var ds = DynamicScraper.create(HN_CLONE);
+			ds
 				.done(function() {
+					assert.ok(ds instanceof ScraperPromise);
 					done();
 				});
 		});
 
 		it('without argument', function(done) {
-			DynamicScraper
-				.create()
+			var ds = DynamicScraper.create();
+			ds
 				.get(HN_CLONE)
 				.done(function() {
+					assert.ok(ds instanceof ScraperPromise);
 					done();
 				});
 		});
 	});
 
-	describe('onStatusCode', function() {
-		it('with code', function(done) {
-			DynamicScraper
-				.create()
-				.get(HN_CLONE)
-				.onStatusCode(200, function() {
-					done();
-				});
+	it('.loadBody, .scrape, .close', function(done) {
+		var ds = new DynamicScraper();
+		ds.body = '<html><body><div id="f">text</div></body></html>';
+		var temp = ds.loadBody(function() {
+			var temp = ds.scrape(function() {
+				return $('#f').text();
+			}, function(err, result) {
+				assert.equal(err, null);
+				assert.equal(result, 'text');
+				assert.ok(ds.close() === ds);
+				assert.ok(!!ds.ph);
+				assert.ok(!!ds.page);
+				done();
+			});
+			assert.ok(temp === ds);
 		});
-
-		it('without code', function(done) {
-			DynamicScraper
-				.create()
-				.get(HN_CLONE)
-				.onStatusCode(function(code) {
-					assert.equal(code, 200);
-					done();
-				});
-		});
+		assert.ok(temp === ds);
 	});
 
-	describe('scrape', function() {
-		it('without extra arguments', function(done) {
-			DynamicScraper
-				.create()
-				.get(HN_CLONE)
-				.scrape(function() {
-					
-					return $('.title a').map(function() {
-						return $(this).text();
-					}).get();
-				}, function(news) {
-					assert.equal(news.length, 9);
-					done();
-				});
-		});
-
-		it('without extra arguments', function(done) {
-			DynamicScraper
-				.create()
-				.get(HN_CLONE)
-				.scrape(function(id) {
-					return $(id).map(function() {
-						return $(this).text();
-					}).get();
-				}, function(news) {
-					assert.equal(news.length, 9);
-					done();
-				}, '.title a');
-		});
+	it('.clone', function() {
+		var ds = new DynamicScraper(),
+			clone = ds.clone();
+		assert.ok(clone instanceof DynamicScraper);
+		assert.ok(ds != clone);
 	});
 
-	it('delay', function(done) {
-		DynamicScraper
-			.create()
-			.get(HN_CLONE)
-			.onStatusCode(function(code) {
-				assert.equal(code, 200);
-			})
-			.delay(100, function() {})
-			.scrape(function() {
-				return $('.dynamic').text();
-			}, function(result) {
-				assert.equal(result, 'Dynamic Content');
-				done();
-			});
-	});
-
-	it('timeout', function(done) {
-		DynamicScraper
-			.create()
-			.get(HN_CLONE)
-			.onStatusCode(function(code) {
-				assert.equal(code, 200);
-			})
-			.timeout(100, function() {
-				done();
-			});
-	});
-
-	it('then', function(done) {
-		DynamicScraper
-			.create()
-			.get(HN_CLONE)
-			.then(function() {
-				done();
-			});
-	});
-
-	it('onError', function(done) {
-		DynamicScraper
-			.create()
-			.get(HN_CLONE)
-			.onError(function(err) {
-				assert.equal(err.message, 'random message');
-				done();
-			})
-			.then(function() {
-				throw new Error('random message');
-			});
-	});
-
-	it('request', function(done) {
-		DynamicScraper
-			.create()
-			.request({
-				url: HN_CLONE,
-				method: 'POST'
-			})
-			.scrape(function() {
-				return $('#POST_MESSAGE').text();
-			}, function(result) {
-				assert.equal(result, 'random text');
-				done();
-			});
+	it('#startFactory, #closeFactory', function() {
+		var temp;
+		temp = DynamicScraper.startFactory();
+		assert.ok(temp === DynamicScraper);
+		temp = DynamicScraper.closeFactory();
+		assert.ok(temp === DynamicScraper);
 	});
 });

@@ -29,12 +29,16 @@ module.exports = function(grunt) {
 				src: 'test/DynamicScraper.js',
 				options: MOCHA_OPTIONS
 			},
+			scraperPromise: {
+				src: 'test/ScraperPromise.js',
+				options: MOCHA_OPTIONS
+			},
 			router: {
 				src: 'test/Router.js',
 				options: MOCHA_OPTIONS
 			},
 			all: {
-				src: ['test/*Scraper.js', 'test/Router.js'],
+				src: ['test/StaticScraper.js', 'test/DynamicScraper.js', 'test/ScraperPromise.js', 'test/Router.js'],
 				options: MOCHA_OPTIONS
 			}
 		}
