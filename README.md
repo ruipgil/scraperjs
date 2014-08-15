@@ -1,4 +1,4 @@
-# Scraperjs
+# Scraperjs [![Build Status](https://travis-ci.org/ruipgil/scraperjs.svg?branch=master)](https://travis-ci.org/ruipgil/scraperjs) [![Dependency Status](https://gemnasium.com/ruipgil/scraperjs.svg)](https://gemnasium.com/ruipgil/scraperjs)
 Scraperjs is a web scraper module that make scraping the web an easy job.
 
 ## Installing
@@ -148,7 +148,7 @@ The following promises can be made over it,
 
 #### More
 
-Check the [API]() or dig into the code, it's well documented and simple to understand.
+Check the examples, the tests or just dig into the code, it's well documented and it's simple to understand.
 
 # Dependencies
 
