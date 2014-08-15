@@ -242,7 +242,7 @@ ScraperPromise.prototype = {
 			stopPointer = {},
 			utils = {
 				stop: function() {},
-				next: function() {},
+				//next: function() {}, //TODO
 				scraper: this,
 				params: param
 			},

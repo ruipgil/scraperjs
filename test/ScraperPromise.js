@@ -235,6 +235,45 @@ function exec(ScraperType) {
 		assert.ok(clone.errorCallback === s.errorCallback);
 		assert.ok(clone.chainParameter === s.chainParameter);
 	});
+
+	describe('usage of utils', function() {
+		it('stop()', function(done) {
+			var c = 0;
+			new ScraperPromise(new ScraperType())
+				.get(HN_CLONE)
+				.then(function() {
+					c++;
+				})
+				.then(function(utils) {
+					c++;
+					utils.stop();
+				})
+				.then(function() {
+					c++;
+				})
+				.done(function() {
+					assert.equal(c, 2);
+					done();
+				});
+		});
+		it('scraper', function(done) {
+			var s = new ScraperPromise(new ScraperType());
+			s.get(HN_CLONE)
+				.done(function(utils) {
+					assert.ok(utils.scraper === s);
+					done();
+				});
+		});
+		it('params', function(done) {
+			var s = new ScraperPromise(new ScraperType());
+			s.get(HN_CLONE)
+				.done(function(utils) {
+					assert.ok(!utils.params);
+					done();
+				});
+		});
+
+	});
 }
 
 describe('Scraper Promise', function() {
