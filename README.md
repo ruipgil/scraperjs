@@ -9,7 +9,7 @@ npm install scraperjs
 
 to test,
 ```
-coming soon...
+grunt test
 ```
 
 # Getting started
@@ -111,7 +111,8 @@ The following promises can be made over it, they all return a scraper promise,
 + ```done(callback:function(utils))```, executes the callback at the end of the promise chain, this is always executed, even if there was an error,
 + ```get(url:string)```, makes a simple HTTP GET request to the url. This promise should be used only once per scraper.
 + ```request(options:Object)```, makes a (possibly) more complex HTTP request, scraperjs uses the [request](https://github.com/mikeal/request) module, and this method is a simple wrapper of ```request.request()```. This promise should be used only once per scraper.
-+ ```scrape(scrapeFn:function(?), callback:function(result:?, utils))```, scrapes the page. It executes the scrapeFn and passes it's result to the callback. When using the StaticScraper, the scrapeFn receives a jQuery function that is used to scrape the page. When using the DynamicScraper, the scrapeFn doesn't receive nothing and can only return a [JSON-serializable](https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages) type.
++ ```use(ScraperPromise)```, uses a ScraperPromise already instantiated.
++ ```scrape(scrapeFn:function(...?), callback:function(result:?, utils), ...?)```, scrapes the page. It executes the scrapeFn and passes it's result to the callback. When using the StaticScraper, the scrapeFn receives a jQuery function that is used to scrape the page. When using the DynamicScraper, the scrapeFn doesn't receive nothing and can only return a [JSON-serializable](https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages) type. Optionally an arbitrary number of arguments can be passed to the scraping function.
 
 All callback functions receive as their last parameter a utils object, with it the parameters of an url from a router can be accessed. Also the chain can be stopped.
 ```javascript
@@ -129,16 +130,19 @@ The promise chain is fired with the same sequence it was declared, with the exce
 
 The router should be initialized like a class
 ```javascript
-var router = new scraperjs.Router();
+var router = new scraperjs.Router(options);
 ```
 
+The options object is optional, and these are the options:
++ ``` firstMatch ```, a boolean, if true the routing will stop once the first path is matched, the default is false.
+
 The following promises can be made over it,
-+ ```on(path:string|RegExp)```, makes the promise for the match url or regular expression, the promises ```get``` or ```request``` and ```createStatic``` or ```createDynamic``` are expected after the on promise.
++ ```on(path:string|RegExp|function(url:string))```, makes the promise for the match url or regular expression, alternatively you can use a function to accept or not a passed url. The promises ```get``` or ```request``` and ```createStatic``` or ```createDynamic``` are expected after the on promise.
 + ```get()```, makes so that the page matched will be requested with a simple HTTP request,
 + ```request(options:Object)```, makes so that the page matched will be requested with a possible more complex HTTP request, , scraperjs uses the [request](https://github.com/mikeal/request) module, and this method is a simple wrapper of [request.request()](https://github.com/mikeal/request#requestoptions-callback),
 + ```createStatic()```, associates a static scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a StaticScraper. Also the done promise of the scraper will not be available.
 + ```createDynamic()```, associates a dynamic scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a DynamicScraper. Also the done promise of the scraper will not be available.
-+ ```route(url:string, callback:function())```, routes an url through all matched paths, calls the callback when it's executed,
++ ```route(url:string, callback:function(boolean))```, routes an url through all matched paths, calls the callback when it's executed, true is passed if the route was successful, false otherwise.
 + ```otherwise(callback:function(url:string))```, executes the callback function if the routing url didn't match any path.
 + ```onError(callback:function(url:string, error:Error))```, executes the callback when an error occurred on the routing scope, not on any scraper, for that situations you should use the onError promise of the scraper.
 
