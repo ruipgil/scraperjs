@@ -158,7 +158,7 @@ As mentioned above, scraperjs is uses some dependencies to do the the heavy work
 + [```phantom```](https://github.com/sgentle/phantomjs-node) + [```phantomjs```](https://github.com/ariya/phantomjs), phantom is an awesome module that links node to phantom, used in the DynamicScraper
 + [```cheerio```](https://github.com/cheeriojs/cheerio), light and fast DOM manipulation, used to implement the StaticScraper
 + [```jquery```](https://github.com/jquery/jquery), to include jquery in the DynamicScraper
-+ although [```Routes.js```](https://github.com/aaronblohowiak/routes.js) is great, however scraperjs doesn't use it to maintain it's "interface layout", but the code to transform the path given on the on promise to regular expressions is from them
++ although [```Routes.js```](https://github.com/aaronblohowiak/routes.js) is great, scraperjs doesn't use it to maintain it's "interface layout", but the code to transform the path given on the on promise to regular expressions is from them
 
 # License
 

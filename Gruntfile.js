@@ -1,19 +1,36 @@
 var testServer = require('./test/setupServer');
 
 var MOCHA_TIMEOUT_S = 10,
+	MOCHA_TIMEOUT_MS = MOCHA_TIMEOUT_S * 1000,
 	MOCHA_OPTIONS = {
 		reporter: 'spec',
-		timeout: MOCHA_TIMEOUT_S * 1000
+		timeout: MOCHA_TIMEOUT_MS
 	};
 
 module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-mocha-test');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-exec');
+
 	grunt.initConfig({
+		exec: {
+			coverage: {
+				command: 'istanbul cover _mocha -- -t ' + MOCHA_TIMEOUT_MS + ' --root src/ test/'
+			},
+			coveralls: {
+				command: 'istanbul cover _mocha --report lcovonly -- -t ' + MOCHA_TIMEOUT_MS + ' --root src/ test/'
+			}
+		},
+		clean: {
+			coverage: {
+				src: ['coverage/']
+			}
+		},
 		watch: {
 			common: {
-				files: ['src/**/*.js', 'test/**/*.js'],
+				files: ['src/**/*.js', 'test/**/*.js', 'Gruntfile.js'],
 				tasks: ['test']
 			}
 		},
@@ -57,6 +74,9 @@ module.exports = function(grunt) {
 	});
 
 	grunt.registerTask('serve-and-test', ['serve', 'mochaTest:all', 'unserve']);
+
+	grunt.registerTask('coverage', ['clean', 'jshint', 'serve', 'exec:coverage', 'unserve']);
+	grunt.registerTask('coveralls', ['clean', 'jshint', 'serve', 'exec:coveralls', 'unserve']);
 
 	grunt.registerTask('test', ['jshint', 'serve-and-test']);
 
