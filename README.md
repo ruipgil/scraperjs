@@ -27,7 +27,7 @@ Try to spot the differences.
 
 ```javascript
 var scraperjs = require('scraperjs');
-scraperjs.createStatic('https://news.ycombinator.com/')
+scraperjs.StaticScraper.create('https://news.ycombinator.com/')
 	.scrape(function($) {
 		return $(".title a").map(function() {
 			return $(this).text();
@@ -44,7 +44,7 @@ This scraper function only receives jQuery a parameter to scrape the page. Still
 
 ```javascript
 var scraperjs = require('scraperjs');
-scraperjs.createDynamic('https://news.ycombinator.com/')
+scraperjs.DynamicScraper.create('https://news.ycombinator.com/')
 	.scrape(function() {
 		return $(".title a").map(function() {
 			return $(this).text();
@@ -148,7 +148,7 @@ The following promises can be made over it,
 
 #### More
 
-Check the examples, the tests or just dig into the code, it's well documented and it's simple to understand.
+Check the [examples](./test/examples), the [tests](./test) or just dig into the code, it's well documented and it's simple to understand.
 
 # Dependencies
 
