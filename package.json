@@ -28,11 +28,13 @@
     "test": "test"
   },
   "devDependencies": {
+    "coveralls": "^2.11.1",
     "express": "^4.8.3",
-    "grunt-cli": "~0.1.9",
     "grunt": "^0.4.5",
+    "grunt-cli": "~0.1.9",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-exec": "^0.4.6",
     "grunt-mocha-test": "^0.11.0",
     "mocha": "^1.21.4"
   }
