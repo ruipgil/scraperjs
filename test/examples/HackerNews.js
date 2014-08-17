@@ -5,7 +5,7 @@ var sjs = require('../../src/Scraper');
 sjs.StaticScraper
 	.create('https://news.ycombinator.com')
 	.scrape(function($) {
-		return $(".title a").map(function() {
+		return $('.title a').map(function() {
 			return $(this).text();
 		}).get().filter(function(elm) {
 			return elm != 'More';
