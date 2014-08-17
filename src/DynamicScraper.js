@@ -42,7 +42,7 @@ DynamicScraper.prototype = Object.create(AbstractScraper.prototype);
  */
 DynamicScraper.prototype.loadBody = function(done) {
 	var that = this;
-	phantom.create({
+	phantom.create('--load-images=no', {
 		onStdout: function() {},
 		onStderr: function() {}
 	}, function(ph) {

@@ -6,6 +6,11 @@ var phantom = require('phantom');
 var PhantomPoll = function() {
 	this.instance = null;
 	this.creating = false;
+	this.flags = '';
+	this.options = {
+		onStdout: function() {},
+		onStderr: function() {}
+	};
 	this.waiting = [];
 	this._createInstance();
 };
@@ -23,7 +28,9 @@ PhantomPoll.prototype = {
 			});
 		}
 	},
-	create: function(options, callback) {
+	create: function(flags, options, callback) {
+		this.flags = flags;
+		this.options = options;
 		callback(this);
 	},
 	_createInstance: function(callback) {
@@ -32,10 +39,7 @@ PhantomPoll.prototype = {
 		} else {
 			var that = this;
 			this.creating = true;
-			phantom.create({
-				onStdout: function() {},
-				onStderr: function() {}
-			}, function(ph) {
+			phantom.create(this.flags, this.options, function(ph) {
 				that.instance = ph;
 				that.creating = false;
 				that.waiting.forEach(function(callback) {
