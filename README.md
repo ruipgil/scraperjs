@@ -37,7 +37,7 @@ scraperjs.StaticScraper.create('https://news.ycombinator.com/')
 	})
 ```
 
-The ```scrape``` promise receives two functions, the first will scrape the page and return the result. The second will receive re result of the scraping.
+The ```scrape``` promise receives two functions, the first will scrape the page and return the result. The second will receive the result of the scraping.
 This scraper function only receives jQuery a parameter to scrape the page. Still, very powerful. It uses [cheerio](https://github.com/cheeriojs/cheerio) to do the magic behind the scenes.
 
 ### Dynamic Scraper
