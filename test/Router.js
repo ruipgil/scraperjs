@@ -46,7 +46,15 @@ describe('Router', function() {
 				www: 'www.',
 				id: 'mNhMogx3YmU'
 			}));
-			done();
+			assert.ok(compareObjects(Router.pathMatcher('*')('https://www.youtube.com/watch/mNhMogx3YmU'), {
+				url: 'https://www.youtube.com/watch/mNhMogx3YmU'
+			}));
+			try {
+				Router.pathMatcher(function() {});
+			} catch (e) {
+				assert.equal(e.name, 'ScraperError');
+				done();
+			}
 		});
 		it('with regular expression', function(done) {
 			var fn = Router.pathMatcher(/s*crape/);
@@ -213,5 +221,53 @@ describe('Router', function() {
 
 		testCase(true, 1);
 		testCase(false, 2);
+	});
+
+	describe('bad formatting', function() {
+		it('get', function(done) {
+			var r = new Router();
+			try {
+				r.get();
+			} catch (e) {
+				assert.equal(e.name, 'ScraperError');
+				done();
+			}
+		});
+		it('request', function(done) {
+			var r = new Router();
+			try {
+				r.request();
+			} catch (e) {
+				assert.equal(e.name, 'ScraperError');
+				done();
+			}
+		});
+		it('createStatic', function(done) {
+			var r = new Router();
+			try {
+				r.createStatic();
+			} catch (e) {
+				assert.equal(e.name, 'ScraperError');
+				done();
+			}
+		});
+		it('createDynamic', function(done) {
+			var r = new Router();
+			try {
+				r.createDynamic();
+			} catch (e) {
+				assert.equal(e.name, 'ScraperError');
+				done();
+			}
+		});
+		it('use', function(done) {
+			var r = new Router();
+			try {
+				r.use(scraper.StaticScraper.create());
+			} catch (e) {
+				assert.equal(e.name, 'ScraperError');
+				done();
+			}
+		});
 	});
 });

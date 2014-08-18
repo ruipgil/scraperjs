@@ -20,7 +20,6 @@ function pathToRegExp(path, keys) {
 		.replace(/\/\(/g, '(?:/')
 		.replace(/(\/)?(\.)?:(\w+)(?:(\(.*?\)))?(\?)?|\*/g, function(_, slash, format, key, capture, optional) {
 			if (_ === '*') {
-				keys.push(undefined);
 				return _;
 			}
 
@@ -297,7 +296,7 @@ Router.pathMatcher = function(pathOrRE) {
 	} else if (typeof pathOrRE === 'string') {
 		pattern = pathToRegExp(pathOrRE, keys);
 	} else {
-		throw new Error('A path must be a string or a regular expression.');
+		throw new ScraperError('A path must be a string or a regular expression.');
 	}
 
 	return function patternMatchingFunction(url) {
