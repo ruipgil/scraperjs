@@ -54,8 +54,12 @@ module.exports = function(grunt) {
 				src: 'test/Router.js',
 				options: MOCHA_OPTIONS
 			},
+			scraperError: {
+				src: 'test/ScraperError.js',
+				options: MOCHA_OPTIONS
+			},
 			all: {
-				src: ['test/StaticScraper.js', 'test/DynamicScraper.js', 'test/ScraperPromise.js', 'test/Router.js'],
+				src: ['test/StaticScraper.js', 'test/DynamicScraper.js', 'test/ScraperPromise.js', 'test/Router.js', 'test/ScraperError.js'],
 				options: MOCHA_OPTIONS
 			}
 		}
