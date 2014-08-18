@@ -36,7 +36,10 @@ var PhantomPoll = function() {
 	 * @type {!Object}
 	 * @private
 	 */
-	this.options = {};
+	this.options = {
+		onStdout: function() {},
+		onStderr: function() {}
+	};
 	/**
 	 * List of functions waiting to be called after the PhantomJS
 	 *   instance is created.
