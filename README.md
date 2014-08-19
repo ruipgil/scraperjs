@@ -84,7 +84,7 @@ router.on('https?://(www.)?youtube.com/watch/:id')
 		path[utils.params.id] = links
 	})
 
-router.route("https://www.youtube.com/watch?v=YE7VzlLtp-4", function() {
+router.route("https://www.youtube.com/watch/YE7VzlLtp-4", function() {
 	console.log("i'm done");
 });
 ```
