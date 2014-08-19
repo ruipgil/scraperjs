@@ -53,7 +53,7 @@ DynamicScraper.prototype.loadBody = function(done) {
 				if (!success) {
 					that.error = new ScraperError('Couldn\'t set the content of the page');
 				}
-				page.injectJs('./node_modules/jquery/dist/jquery.min.js', function(success) {
+				page.injectJs(__dirname + '/../node_modules/jquery/dist/jquery.min.js', function(success) {
 					if (!success) {
 						that.error = new ScraperError('Couldn\'t inject jQuery into the page.');
 					}
