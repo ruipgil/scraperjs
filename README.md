@@ -7,7 +7,7 @@ Scraperjs is a web scraper module that make scraping the web an easy job.
 npm install scraperjs
 ```
 
-to test (this is optional and requires the installation with the ``` --save-dev ``` tag),
+If you would like to test (this is optional and requires the installation with the ``` --save-dev ``` tag),
 ```
 grunt test
 ```
