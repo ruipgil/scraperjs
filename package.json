@@ -3,6 +3,11 @@
   "version": "0.2.2",
   "description": "A complete and versatile web scraper.",
   "main": "./src/Scraper.js",
+  "keywords": [
+    "scraper",
+    "scraping",
+    "web"
+  ],
   "scripts": {
     "test": "grunt test"
   },
@@ -14,6 +19,7 @@
     "url": "https://github.com/ruipgil/scraperjs/issues"
   },
   "gitHead": "c58be022438e49564597bbb3ad7c036d610744f8",
+  "homepage": "https://github.com/ruipgil/scraperjs",
   "author": "Rui Gil",
   "license": "MIT",
   "dependencies": {
@@ -39,5 +45,8 @@
     "grunt-mocha-test": "^0.11.0",
     "istanbul": "^0.3.0",
     "mocha": "^1.21.4"
+  },
+  "engines": {
+    "node": ">=0.10"
   }
 }
