@@ -53,11 +53,8 @@ DynamicScraper.prototype.loadBody = function(done) {
 				if (!success) {
 					that.error = new ScraperError('Couldn\'t set the content of the page');
 				}
-				page.injectJs(__dirname + '/../node_modules/jquery/dist/jquery.min.js', function(success) {
-					if (!success) {
-						that.error = new ScraperError('Couldn\'t inject jQuery into the page.');
-					}
-					done();
+				that.inject(__dirname + '/../node_modules/jquery/dist/jquery.min.js', function(err) {
+					done(err ? new ScraperError('Couldn\'t inject jQuery into the page.') : undefined);
 				});
 			});
 		});
@@ -93,6 +90,28 @@ DynamicScraper.prototype.scrape = function(scraperFn, callbackFn, args) {
 
 	this.page.evaluate.apply(this.page, args);
 	return this;
+};
+/**
+ * Injects a javascript file into the page.
+ *
+ * @param  {!string} file File to inject.
+ * @param  {!function(!ScraperError=)} callback Function to be called
+ *   when the file has injected. If the injection fails, then the
+ *   first argument is not is a {@see ScraperError}.
+ * @public
+ */
+DynamicScraper.prototype.inject = function(file, callback) {
+	if (this.page) {
+		this.page.injectJs(file, function(success) {
+			if (success) {
+				callback();
+			} else {
+				callback(new ScraperError('Couldn\'t inject code, at "' + file + '".'));
+			}
+		});
+	} else {
+		throw new ScraperError('Couldn\'t inject code, at "' + file + '". The page has not been initialized yet.');
+	}
 };
 /**
  * @override
