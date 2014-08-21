@@ -21,7 +21,7 @@
     "cheerio": "~0.17.0",
     "jquery": "^2.1.1",
     "phantom": "~0.6.5",
-    "request": "~2.39.0"
+    "request": "~2.40.0"
   },
   "readmeFilename": "README.md",
   "directories": {
