@@ -133,15 +133,40 @@ DynamicScraper.prototype.close = function() {
 DynamicScraper.prototype.clone = function() {
 	return new DynamicScraper();
 };
-
+/**
+ * Creates a dynamic scraper, wrapped around a scraper promise.
+ *
+ * @param  {!string=} url If provided makes an HTTP GET request to the
+ *   given URL.
+ * @return {!ScraperPromise} Scraper promise, with a dynamic scraper.
+ * @public
+ * @static
+ */
 DynamicScraper.create = function(url) {
 	return AbstractScraper.create(DynamicScraper, url);
 };
-
+/**
+ * Starts the factory. A factory should only be open once, and after
+ *   it's open it must be closed with {@see DynamicScraper#closeFactory}.
+ *   A factory makes so that there's only one instance of phantom at a
+ *   time, which makes the creation/usage of dynamic scrapers much
+ *   more efficient.
+ *
+ * @return {!DynamicScraper}
+ * @public
+ * @static
+ */
 DynamicScraper.startFactory = function() {
 	phantom = new PhantomPoll();
 	return DynamicScraper;
 };
+/**
+ * Closes the factory. For more information {@see DynamicScraper#closeFactory}
+ *
+ * @return {!DynamicScraper}
+ * @public
+ * @static
+ */
 DynamicScraper.closeFactory = function() {
 	if (phantom instanceof PhantomPoll) {
 		phantom.close();
@@ -149,4 +174,5 @@ DynamicScraper.closeFactory = function() {
 	phantom = phantomOrig;
 	return DynamicScraper;
 };
+
 module.exports = DynamicScraper;

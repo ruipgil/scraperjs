@@ -67,7 +67,15 @@ StaticScraper.prototype.close = function() {
 StaticScraper.prototype.clone = function() {
 	return new StaticScraper();
 };
-
+/**
+ * Creates a static scraper, wrapped around a scraper promise.
+ *
+ * @param  {!string=} url If provided makes an HTTP GET request to the
+ *   given URL.
+ * @return {!ScraperPromise} Scraper promise, with a static scraper.
+ * @public
+ * @static
+ */
 StaticScraper.create = function(url) {
 	return AbstractScraper.create(StaticScraper, url);
 };
