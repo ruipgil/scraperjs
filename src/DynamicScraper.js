@@ -42,14 +42,10 @@ DynamicScraper.prototype.loadBody = function(done) {
 		that.ph = ph;
 		ph.createPage(function(page) {
 			that.page = page;
-			page.setContent(that.body, null, function(success) {
-				if (!success) {
-					done(new ScraperError('Couldn\'t set the content of the page'));
-				} else {
-					that.inject(DynamicScraper.JQUERY_FILE, function(err) {
-						done(err ? new ScraperError('Couldn\'t inject jQuery into the page.') : undefined);
-					});
-				}
+			page.setContent(that.body, null, function() {
+				that.inject(DynamicScraper.JQUERY_FILE, function(err) {
+					done(err ? new ScraperError('Couldn\'t inject jQuery into the page.') : undefined);
+				});
 			});
 		});
 	});
