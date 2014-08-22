@@ -48,6 +48,54 @@ describe('DynamicScraper', function() {
 		assert.ok(temp === ds);
 	});
 
+	describe('.inject', function() {
+		it('page not loaded', function() {
+			var ds = new DynamicScraper();
+			try {
+				ds.inject('');
+				assert.fail('Should have thrown');
+			} catch (e) {
+				assert.equal(e.message, 'Couldn\'t inject code, at "". The page has not been initialized yet.');
+			}
+		});
+
+		it('success', function(done) {
+			var ds = new DynamicScraper();
+			ds.get(HN_CLONE, function(err) {
+				if (err) {
+					assert.fail('Shouldn\'t have returned an error.');
+				}
+				ds.inject(__dirname + '/static/code.js', function(err) {
+					if (err) {
+						assert.fail('Should load code successfully.');
+					} else {
+						done();
+					}
+				});
+
+			});
+		});
+
+		it('invalid code', function(done) {
+			var ds = new DynamicScraper();
+			ds.get(HN_CLONE, function(err) {
+				if (err) {
+					assert.fail('Shouldn\'t have returned an error.');
+				}
+				var file = __dirname + '/static/invalid-code.js';
+				ds.inject(file, function(err) {
+					if (err) {
+						assert.equal(err.message, 'Couldn\'t inject code, at "' + file + '".');
+						done();
+					} else {
+						assert.fail('Shouldn\'t load code successfully.');
+					}
+				});
+
+			});
+		});
+	});
+
 	it('.clone', function() {
 		var ds = new DynamicScraper(),
 			clone = ds.clone();
