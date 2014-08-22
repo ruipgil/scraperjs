@@ -5,7 +5,8 @@ var MOCHA_TIMEOUT_S = 10,
 	MOCHA_OPTIONS = {
 		reporter: 'spec',
 		timeout: MOCHA_TIMEOUT_MS
-	};
+	},
+	COVERAGE_THRESHOLD = 95;
 
 module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-mocha-test');
@@ -21,6 +22,9 @@ module.exports = function(grunt) {
 			},
 			coveralls: {
 				command: 'istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -t ' + MOCHA_TIMEOUT_MS + ' --root src/ test/ && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js'
+			},
+			'check-coverage': {
+				command: 'istanbul check-coverage --lines ' + COVERAGE_THRESHOLD + ' --statements ' + COVERAGE_THRESHOLD + ' --functions ' + COVERAGE_THRESHOLD + ' --branches ' + COVERAGE_THRESHOLD + ' ./coverage/coverage.json'
 			}
 		},
 		clean: {
@@ -83,10 +87,11 @@ module.exports = function(grunt) {
 
 	grunt.registerTask('serve-and-test', ['serve', 'mochaTest:all', 'unserve']);
 
-	grunt.registerTask('coverage', ['clean', 'jshint', 'serve', 'exec:coverage', 'unserve']);
-	grunt.registerTask('coveralls', ['clean', 'jshint', 'serve', 'exec:coveralls', 'unserve']);
+	grunt.registerTask('coverage', ['clean', 'jshint', 'serve', 'exec:coverage', 'exec:check-coverage', 'unserve']);
+	grunt.registerTask('coveralls', ['clean', 'jshint', 'serve', 'exec:coveralls', 'exec:check-coverage', 'unserve']);
 
-	grunt.registerTask('test', ['jshint', 'serve-and-test']);
+	grunt.registerTask('unit', ['jshint', 'serve-and-test']);
+	grunt.registerTask('test', ['coverage']);
 
 	grunt.registerTask('watch-all', ['serve', 'watch', 'unserve']);
 };
