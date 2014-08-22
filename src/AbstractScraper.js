@@ -48,12 +48,12 @@ AbstractScraper.prototype = {
 	get: function(url, callback) {
 		var that = this;
 		request.get(url, function processGet(error, response, body) {
-			that.response = response;
-			that.statusCode = response.statusCode;
-			that.body = body;
 			if (error) {
 				callback(error);
 			} else {
+				that.response = response;
+				that.statusCode = response.statusCode;
+				that.body = body;
 				that.loadBody(function() {
 					callback(null);
 				});
@@ -79,12 +79,12 @@ AbstractScraper.prototype = {
 	request: function(options, callback) {
 		var that = this;
 		request(options, function processRequest(error, response, body) {
-			that.response = response;
-			that.statusCode = response.statusCode;
-			that.body = body;
 			if (error) {
 				callback(error);
 			} else {
+				that.response = response;
+				that.statusCode = response.statusCode;
+				that.body = body;
 				that.loadBody(function() {
 					callback(null);
 				});
@@ -132,7 +132,10 @@ AbstractScraper.prototype = {
 	 * @return {!AbstractScraper} This scraper.
 	 * @protected
 	 */
-	loadBody: function(done) {},
+	loadBody: function(done) {
+		done();
+		return this;
+	},
 	/**
 	 * Scrapes the webpage. According to a function, and a callback.
 	 *
