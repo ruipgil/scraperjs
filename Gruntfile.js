@@ -38,6 +38,10 @@ module.exports = function(grunt) {
 			all: ['src/**/*.js', 'test/**/*.js']
 		},
 		mochaTest: {
+			abstractScraper: {
+				src: 'test/AbstractScraper.js',
+				options: MOCHA_OPTIONS
+			},
 			staticScraper: {
 				src: 'test/StaticScraper.js',
 				options: MOCHA_OPTIONS
@@ -59,7 +63,7 @@ module.exports = function(grunt) {
 				options: MOCHA_OPTIONS
 			},
 			all: {
-				src: ['test/StaticScraper.js', 'test/DynamicScraper.js', 'test/ScraperPromise.js', 'test/Router.js', 'test/ScraperError.js'],
+				src: ['test/AbstractScraper.js', 'test/StaticScraper.js', 'test/DynamicScraper.js', 'test/ScraperPromise.js', 'test/Router.js', 'test/ScraperError.js'],
 				options: MOCHA_OPTIONS
 			}
 		}
