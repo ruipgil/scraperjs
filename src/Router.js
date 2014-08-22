@@ -279,7 +279,7 @@ Router.pathMatcher = function(pathOrRE) {
 		var match = pattern.exec(url);
 		if (!match) {
 			return false;
-		} else if (match instanceof Object) {
+		} else {
 			return keys.reduce(function(obj, value, index) {
 				obj[value] = match[index];
 				return obj;

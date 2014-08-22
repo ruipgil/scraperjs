@@ -127,6 +127,18 @@ describe('Router', function() {
 			assert.ok(!found);
 		});
 	});
+	it('route', function(done) {
+		var r = new Router();
+		r.on(LH + '/watch/:id')
+			.createStatic();
+		r.route(LH + '/watch/fjsdgfmhgsdf', function(found) {
+			assert.ok(found);
+			r.route(LH + '/scrpng', function(found) {
+				assert.ok(!found);
+				done();
+			});
+		});
+	});
 	it('createStatic', function(done) {
 		var r = new Router();
 		r.on(LH + '/hacker-news-clone')
