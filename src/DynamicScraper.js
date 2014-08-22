@@ -79,7 +79,8 @@ DynamicScraper.prototype.loadBody = function(done) {
 DynamicScraper.prototype.scrape = function(scraperFn, callbackFn, args) {
 	var that = this;
 	if (this.error) {
-		return callbackFn(that.error, null);
+		callbackFn(that.error, null);
+		return this;
 	}
 
 	args = args || [];
