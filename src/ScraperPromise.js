@@ -31,7 +31,9 @@ var ScraperPromise = function(scraper) {
 	 * @type {!function(?)}
 	 * @private
 	 */
-	this.errorCallback = function(err) { throw err; };
+	this.errorCallback = function(err) {
+		throw err;
+	};
 	/**
 	 * A parameter object to be passed to the chain, at the _fire
 	 *   method. This should be set immediately before the call, and
@@ -62,13 +64,15 @@ ScraperPromise.prototype = {
 		if (typeof code == 'function') {
 			callback = code;
 			this.promises.push(function onGenericStatusCode(done, utils) {
-				callback(this.scraper.getStatusCode(), utils);
+				utils.lastReturn = callback(this.scraper.getStatusCode(), utils);
 				done();
 			});
 		} else {
 			this.promises.push(function onStatusCode(done, utils) {
 				if (code === this.scraper.getStatusCode()) {
-					callback(utils);
+					utils.lastReturn = callback(utils);
+				} else {
+					utils.lastReturn = undefined;
 				}
 				done();
 			});
@@ -93,9 +97,10 @@ ScraperPromise.prototype = {
 		this.promises.push(function scrape(done, utils) {
 			this.scraper.scrape(scrapeFn, function(err, result) {
 				if (err) {
+					utils.lastReturn = undefined;
 					done(err);
 				} else {
-					callback(result, utils);
+					utils.lastReturn = callback(result, utils);
 					done();
 				}
 			}, extraArguments);
@@ -117,7 +122,7 @@ ScraperPromise.prototype = {
 		callback = callback || function() {};
 		this.promises.push(function delay(done, utils) {
 			setTimeout(function() {
-				callback(utils);
+				utils.lastReturn = callback(utils);
 				done();
 			}, time);
 		});
@@ -140,6 +145,7 @@ ScraperPromise.prototype = {
 			setTimeout(function() {
 				callback(utils);
 			}, time);
+			utils.lastReturn = undefined;
 			done();
 		});
 		return this;
@@ -167,7 +173,7 @@ ScraperPromise.prototype = {
 	 */
 	then: function(callback) {
 		this.promises.push(function then(done, utils) {
-			callback(utils);
+			utils.lastReturn = callback(utils);
 			done();
 		});
 		return this;
@@ -243,7 +249,8 @@ ScraperPromise.prototype = {
 			utils = {
 				stop: null,
 				scraper: this,
-				params: param
+				params: param,
+				lastReturn: undefined
 			},
 			keep = true;
 		this.chainParameter = null;
