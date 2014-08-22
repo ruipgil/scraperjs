@@ -292,6 +292,35 @@ function exec(ScraperType) {
 		assert.ok(clone.chainParameter === s.chainParameter);
 	});
 
+	it('passing values between promises', function(done) {
+		new ScraperPromise(new ScraperType())
+			.done(function(utils) {
+				assert.deepEqual(utils.lastReturn, 5);
+				done();
+			})
+			.then(function(utils) {
+				assert.deepEqual(utils.lastReturn, undefined);
+				return 1;
+			})
+			.onStatusCode(200, function(utils) {
+				assert.deepEqual(utils.lastReturn, 1);
+				return utils.lastReturn + 1;
+			})
+			.onStatusCode(function(code, utils) {
+				assert.deepEqual(utils.lastReturn, 2);
+				return utils.lastReturn + 1;
+			})
+			.delay(10, function(utils) {
+				assert.deepEqual(utils.lastReturn, 3);
+				return utils.lastReturn + 1;
+			})
+			.scrape(function() {}, function(result, utils) {
+				assert.deepEqual(utils.lastReturn, 4);
+				return utils.lastReturn + 1;
+			})
+			.get(HN_CLONE);
+	});
+
 	describe('usage of utils', function() {
 		it('stop()', function(done) {
 			var c = 0;
