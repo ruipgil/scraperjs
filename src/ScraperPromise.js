@@ -7,10 +7,10 @@ var ScraperPromise = function(scraper) {
 	/**
 	 * Scraper to use..
 	 *
-	 * @type {?Scraper}
+	 * @type {!Scraper}
 	 * @private
 	 */
-	this.scraper = scraper || null;
+	this.scraper = scraper;
 	/**
 	 * Promise chunks.
 	 *
@@ -28,10 +28,10 @@ var ScraperPromise = function(scraper) {
 	/**
 	 * Function to call when there's an error.
 	 *
-	 * @type {?function(?)}
+	 * @type {!function(?)}
 	 * @private
 	 */
-	this.errorCallback = null;
+	this.errorCallback = function(err) { throw err; };
 	/**
 	 * A parameter object to be passed to the chain, at the _fire
 	 *   method. This should be set immediately before the call, and
@@ -241,8 +241,7 @@ ScraperPromise.prototype = {
 			param = this.chainParameter,
 			stopPointer = {},
 			utils = {
-				stop: function() {},
-				//next: function() {}, //TODO
+				stop: null,
 				scraper: this,
 				params: param
 			},
@@ -276,20 +275,12 @@ ScraperPromise.prototype = {
 				done(err);
 			}
 		}, function(err) {
-			utils.stop = function() {};
-			var trh = false;
+			utils.stop = null;
 			if (err && err !== stopPointer) {
-				if (that.errorCallback) {
-					that.errorCallback(err, utils);
-				} else {
-					trh = true;
-				}
+				that.errorCallback(err, utils);
 			}
 			that.doneCallback(utils);
 			that.scraper.close();
-			if (trh) {
-				throw err;
-			}
 		});
 	},
 	/**

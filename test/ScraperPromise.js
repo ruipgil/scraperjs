@@ -4,7 +4,8 @@ var assert = require('assert'),
 	StaticScraper = sjs.StaticScraper,
 	DynamicScraper = sjs.DynamicScraper,
 	ScraperPromise = sjs.ScraperPromise,
-	HN_CLONE = 'http://localhost:3000/hacker-news-clone';
+	HN_CLONE = 'http://localhost:3000/hacker-news-clone',
+	domain = require('domain');
 
 function exec(ScraperType) {
 	function isDynamic() {
@@ -15,19 +16,24 @@ function exec(ScraperType) {
 		it('with code', function(done) {
 			var s = new ScraperPromise(new ScraperType())
 				.get(HN_CLONE);
-			var temp = s.onStatusCode(200, function() {
-				done();
-			});
+			var temp = s
+				.onStatusCode(202, function() {
+					assert.fail('This status code should not trigger.');
+				})
+				.onStatusCode(200, function() {
+					done();
+				});
 			assert.ok(temp === s);
 		});
 
 		it('without code', function(done) {
 			var s = new ScraperPromise(new ScraperType())
 				.get(HN_CLONE);
-			var temp = s.onStatusCode(function(code) {
-				assert.equal(code, 200);
-				done();
-			});
+			var temp = s
+				.onStatusCode(function(code) {
+					assert.equal(code, 200);
+					done();
+				});
 			assert.ok(temp === s);
 		});
 	});
@@ -65,6 +71,24 @@ function exec(ScraperType) {
 		});
 		assert.ok(s === temp);
 	});
+
+	// FIXME - this is not working for the dynamic scraper with factory
+	if (!isDynamic()) {
+		it('error without onError', function(done) {
+			var d = domain.create();
+			d.on('error', function(err) {
+				assert.equal(err.message, 'random message');
+				done();
+			});
+			d.run(function() {
+				new ScraperPromise(new ScraperType())
+					.get(HN_CLONE)
+					.then(function() {
+						throw new Error('random message');
+					});
+			});
+		});
+	}
 
 	describe('scrape', function() {
 		var expectedVal;
@@ -118,6 +142,38 @@ function exec(ScraperType) {
 				assert.equal(news.length, expectedVal);
 				done();
 			}, '.title a');
+			assert.ok(temp === s);
+		});
+
+		it('with error', function(done) {
+			var s = new ScraperPromise(new ScraperType())
+				.get(HN_CLONE);
+			var temp;
+			if (isDynamic()) {
+				temp = s
+					.onError(function() {
+						assert.fail('Invalid call.');
+					})
+					.scrape(function() {
+						throw new Error('Error inside scraping fn.');
+					}, function(result) {
+						assert.ok(result === null);
+						done();
+					});
+			} else {
+				temp = s
+					.onError(function(err) {
+						assert.equal(err.message, 'Error inside scraping fn.');
+					})
+					.scrape(function() {
+						throw new Error('Error inside scraping fn.');
+					}, function() {
+						assert.fail('Invalid call.');
+					})
+					.done(function() {
+						done();
+					});
+			}
 			assert.ok(temp === s);
 		});
 	});
