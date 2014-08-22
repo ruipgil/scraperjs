@@ -48,4 +48,26 @@ describe('AbstractScraper', function() {
 			done();
 		});
 	});
+	it('loadBody', function(done) {
+		var as = new AbstractScraper();
+		as.loadBody(function() {
+			done();
+		});
+	});
+	it('scrape', function() {
+		var as = new AbstractScraper();
+		as.scrape(function() {
+			assert.fail('Function shouldn\'t be called');
+		}, function() {
+			assert.fail('Function shouldn\'t be called');
+		});
+	});
+	it('close', function() {
+		var as = new AbstractScraper();
+		assert.ok(as.close() === undefined);
+	});
+	it('clone', function() {
+		var as = new AbstractScraper();
+		assert.ok(as.clone() === undefined);
+	});
 });

@@ -76,7 +76,7 @@ describe('DynamicScraper', function() {
 			});
 		});
 
-		it('invalid code', function(done) {
+		it('fails', function(done) {
 			var ds = new DynamicScraper();
 			ds.get(HN_CLONE, function(err) {
 				if (err) {
@@ -92,6 +92,21 @@ describe('DynamicScraper', function() {
 					}
 				});
 
+			});
+		});
+
+		it('fails jQuery', function(done) {
+			var jq = DynamicScraper.JQUERY_FILE;
+			DynamicScraper.JQUERY_FILE += '.non';
+			var ds = new DynamicScraper();
+			ds.get(HN_CLONE, function(err) {
+				DynamicScraper.JQUERY_FILE = jq;
+				if (err) {
+					assert.equal(err.message, 'Couldn\'t inject jQuery into the page.');
+				} else {
+					assert.fail('Should have returned an error.');
+				}
+				done();
 			});
 		});
 	});
