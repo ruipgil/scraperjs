@@ -43,14 +43,15 @@ StaticScraper.prototype.loadBody = function(done) {
  * @public
  */
 StaticScraper.prototype.scrape = function(scraperFn, callbackFn, args) {
+	var result = null, err = null;
 	args = args || [];
 	args.unshift(this.$);
 	try {
-		var result = scraperFn.apply(null, args);
-		callbackFn(null, result);
-	} catch (err) {
-		callbackFn(err, null);
+		result = scraperFn.apply(null, args);
+	} catch (e) {
+		err = e;
 	}
+	callbackFn(err, result);
 	return this;
 };
 /**

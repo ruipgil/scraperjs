@@ -27,13 +27,6 @@ var DynamicScraper = function() {
 	 * @private
 	 */
 	this.page = null;
-	/**
-	 * Error.
-	 *
-	 * @type {?ErrorScraper}
-	 * @private
-	 */
-	this.error = null;
 };
 DynamicScraper.prototype = Object.create(AbstractScraper.prototype);
 /**
@@ -51,11 +44,12 @@ DynamicScraper.prototype.loadBody = function(done) {
 			that.page = page;
 			page.setContent(that.body, null, function(success) {
 				if (!success) {
-					that.error = new ScraperError('Couldn\'t set the content of the page');
+					done(new ScraperError('Couldn\'t set the content of the page'));
+				} else {
+					that.inject(DynamicScraper.JQUERY_FILE, function(err) {
+						done(err ? new ScraperError('Couldn\'t inject jQuery into the page.') : undefined);
+					});
 				}
-				that.inject(__dirname + '/../node_modules/jquery/dist/jquery.min.js', function(err) {
-					done(err ? new ScraperError('Couldn\'t inject jQuery into the page.') : undefined);
-				});
 			});
 		});
 	});
@@ -77,12 +71,6 @@ DynamicScraper.prototype.loadBody = function(done) {
  * @public
  */
 DynamicScraper.prototype.scrape = function(scraperFn, callbackFn, args) {
-	var that = this;
-	if (this.error) {
-		callbackFn(that.error, null);
-		return this;
-	}
-
 	args = args || [];
 	args.unshift(function(result) {
 		callbackFn(null, result);
@@ -175,5 +163,13 @@ DynamicScraper.closeFactory = function() {
 	phantom = phantomOrig;
 	return DynamicScraper;
 };
+/**
+ * Location of the jquery file.
+ *
+ * @type {!string}
+ * @private
+ * @static
+ */
+DynamicScraper.JQUERY_FILE = __dirname + '/../node_modules/jquery/dist/jquery.min.js';
 
 module.exports = DynamicScraper;

@@ -54,8 +54,8 @@ AbstractScraper.prototype = {
 				that.response = response;
 				that.statusCode = response.statusCode;
 				that.body = body;
-				that.loadBody(function() {
-					callback(null);
+				that.loadBody(function(err) {
+					callback(err);
 				});
 			}
 		});
@@ -85,8 +85,8 @@ AbstractScraper.prototype = {
 				that.response = response;
 				that.statusCode = response.statusCode;
 				that.body = body;
-				that.loadBody(function() {
-					callback(null);
+				that.loadBody(function(err) {
+					callback(err);
 				});
 			}
 		});
