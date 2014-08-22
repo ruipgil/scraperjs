@@ -64,13 +64,6 @@ var Router = function(options) {
 	 * @private
 	 */
 	this.otherwiseFn = function() {};
-	/**
-	 * Error promise.
-	 *
-	 * @type {!function(!string=)}
-	 * @private
-	 */
-	this.errorFn = function() {};
 };
 Router.prototype = {
 	constructor: Router,
@@ -143,21 +136,6 @@ Router.prototype = {
 		} else {
 			throw new ScraperError('');
 		}
-	},
-	/**
-	 * On error promise. This promise fires when an error is thrown,
-	 *   at this level there shouldn't be any error.
-	 * This is a one time promise, which means that the last promise
-	 *   is gonna be the one to be executed, if needed be.
-	 *
-	 * @param  {!function(!string, ?)} callback Function with the url
-	 *   and the error as the parameters.
-	 * @return {!Router} This router.
-	 * @public
-	 */
-	onError: function(callback) {
-		this.errorFn = callback;
-		return this;
 	},
 	/**
 	 * A promise to be triggered when none of the paths where matched.
@@ -263,10 +241,8 @@ Router.prototype = {
 				done();
 			}
 
-		}, function(err) {
-			if (err && err !== stopFlag) {
-				that.errorFn(err);
-			} else if (!atLeastOne) {
+		}, function() {
+			if (!atLeastOne) {
 				that.otherwiseFn(url);
 			}
 			callback(atLeastOne);
@@ -308,8 +284,6 @@ Router.pathMatcher = function(pathOrRE) {
 				obj[value] = match[index];
 				return obj;
 			}, {});
-		} else {
-			return {};
 		}
 	};
 };
