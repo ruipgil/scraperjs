@@ -30,6 +30,13 @@ var AbstractScraper = function() {
 	 * @protected
 	 */
 	this.body = null;
+	/**
+	 * URL.
+	 *
+	 * @type {!string}
+	 * @protected
+	 */
+	this.url = '';
 };
 AbstractScraper.prototype = {
 	constructor: AbstractScraper,
@@ -54,6 +61,7 @@ AbstractScraper.prototype = {
 				that.response = response;
 				that.statusCode = response.statusCode;
 				that.body = body;
+				that.url = response.request.href;
 				that.loadBody(function(err) {
 					callback(err);
 				});
@@ -85,6 +93,7 @@ AbstractScraper.prototype = {
 				that.response = response;
 				that.statusCode = response.statusCode;
 				that.body = body;
+				that.url = response.request.href;
 				that.loadBody(function(err) {
 					callback(err);
 				});
