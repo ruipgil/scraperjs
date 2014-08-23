@@ -124,5 +124,7 @@ describe('DynamicScraper', function() {
 		assert.ok(temp === DynamicScraper);
 		temp = DynamicScraper.closeFactory();
 		assert.ok(temp === DynamicScraper);
+		temp = DynamicScraper.closeFactory();
+		assert.ok(temp === DynamicScraper);
 	});
 });
