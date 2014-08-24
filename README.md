@@ -107,6 +107,7 @@ The following promises can be made over it, they all return a scraper promise,
 + ```delay(time:number, callback:function(utils))```, delays the execution of the chain by time milliseconds,
 + ```timeout(time:number, callback:function(utils))```, executes the callback function after time milliseconds,
 + ```then(callback:function(utils))```, executes the callback after the last promise,
++ ```async(callback:function(done, utils))```, executes the callback, stopping the promise chain, resuming it when the ```done``` function is called,
 + ```onError(callback:function(utils))```, executes the callback when there was an error, errors block the execution of the chain even if the promise was not defined,
 + ```done(callback:function(utils))```, executes the callback at the end of the promise chain, this is always executed, even if there was an error,
 + ```get(url:string)```, makes a simple HTTP GET request to the url. This promise should be used only once per scraper.
@@ -125,6 +126,32 @@ DynamicScraper.create()
 ```
 
 The promise chain is fired with the same sequence it was declared, with the exception of the promises get and request that fire the chain when they've received a valid response, and the promises done and onError, which were explained above.
+
+You can also waterfall values between promises by returning them (with the exception of the promise ```timeout```, that will always return ```undefined```) and it can be access through ```utils.lastReturn```.
+
+##### A more powerful DynamicScraper.
+
+When lots of instances of DynamicScraper are needed, it's creation gets really heavy on resources and takes a lot of time. To make this more lighter you can use a *factory*, that will create only one PhantomJS instance, and every DynamicScraper will request a page to work with. To use it you must start the factory before any DynamicSrcaper is created, ``` scraperjs.DynamicScraper.startFactory() ``` and then close the factory after the execution of your program, ``` scraperjs.DynamicScraper.closeFactory() ```.
+To make the scraping function more robust you can inject code into the page,
+```js
+var ds = scraperjs.DynamicScraper
+	.create('http://news.ycombinator.com')
+	.async(function(done, utils) {
+		utils.scraper.inject(__dirname+'/path/to/code.js', function(err) {
+			// in this case if there was an error won't fire onError promise.
+			if(err) {
+				utils.stop();
+			} else {
+				done();
+			}
+		});
+	})
+	.scrape(function() {
+			return functionInTheCodeInjected();
+		}, function(result) {
+			console.log(result);
+		});
+```
 
 #### Router
 

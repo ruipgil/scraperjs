@@ -179,6 +179,21 @@ ScraperPromise.prototype = {
 		return this;
 	},
 	/**
+	 * Stops the promise chain and resumes it after a callback
+	 *   function.
+	 *
+	 * @param  {!function(!function, !Object)} callback Callback.
+	 * @return {!ScraperPromise} This object, so that new promises can
+	 *   be made.
+	 * @public
+	 */
+	async: function(callback) {
+		this.promises.push(function async(done, utils) {
+			utils.lastReturn = callback(done, utils);
+		});
+		return this;
+	},
+	/**
 	 * Sets a promise to when an error occur, note that an error will
 	 *   break the promise chain, so this is the next promise to be
 	 *   called and if the done promise is not set the last. To avoid

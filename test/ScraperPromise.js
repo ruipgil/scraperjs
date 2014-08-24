@@ -59,6 +59,18 @@ function exec(ScraperType) {
 		assert.ok(temp === s);
 	});
 
+	it('then', function(done) {
+		var s = new ScraperPromise(new ScraperType())
+			.get(HN_CLONE);
+		var temp = s.async(function(done) {
+			done();
+		});
+		s.done(function() {
+			done();
+		});
+		assert.ok(temp === s);
+	});
+
 	it('onError', function(done) {
 		var s = new ScraperPromise(new ScraperType())
 			.get(HN_CLONE)
