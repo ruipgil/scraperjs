@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Scraperjs by ruipgil</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Scraperjs</h1>
+        <p>A complete and versatile web scraper.</p>
+
+        <p class="view"><a href="https://github.com/ruipgil/scraperjs">View the Project on GitHub <small>ruipgil/scraperjs</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/ruipgil/scraperjs/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/ruipgil/scraperjs/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/ruipgil/scraperjs">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="scraperjs----" class="anchor" href="#scraperjs----"><span class="octicon octicon-link"></span></a>Scraperjs <a href="https://travis-ci.org/ruipgil/scraperjs"><img src="https://travis-ci.org/ruipgil/scraperjs.svg?branch=master" alt="Build Status"></a> <a href="https://gemnasium.com/ruipgil/scraperjs"><img src="https://gemnasium.com/ruipgil/scraperjs.svg" alt="Dependency Status"></a> <a href="https://coveralls.io/r/ruipgil/scraperjs"><img src="https://coveralls.io/repos/ruipgil/scraperjs/badge.png" alt="Coverage Status"></a> <a href="http://badge.fury.io/js/scraperjs"><img src="https://badge.fury.io/js/scraperjs.svg" alt="NPM version"></a>
+</h1>
+
+<p>Scraperjs is a web scraper module that make scraping the web an easy job.</p>
+
+<h2>
+<a name="installing" class="anchor" href="#installing"><span class="octicon octicon-link"></span></a>Installing</h2>
+
+<pre><code>npm install scraperjs
+</code></pre>
+
+<p>If you would like to test (this is optional and requires the installation with the <code>--save-dev</code> tag),</p>
+
+<pre><code>grunt test
+</code></pre>
+
+<h1>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h1>
+
+<p>Scraperjs exposes two different scrapers,</p>
+
+<ul>
+<li>a <strong>SimpleScraper</strong>, that is light fast and with a low footprint, however it doesn't allow for more complex situations, like scraping dynamic content.</li>
+<li>a <strong>DynamicScraper</strong>, that is a bit more heavy, but allows you to scrape dynamic content, like in the browser console.
+both scrapers expose a <em>very</em> similar API, with some minor differences when it comes to scraping.</li>
+</ul><h2>
+<a name="lets-scrape-hacker-news-with-both-scrapers" class="anchor" href="#lets-scrape-hacker-news-with-both-scrapers"><span class="octicon octicon-link"></span></a>Lets scrape <a href="https://news.ycombinator.com/">Hacker News</a>, with both scrapers.</h2>
+
+<p>Try to spot the differences.</p>
+
+<h3>
+<a name="static-scraper" class="anchor" href="#static-scraper"><span class="octicon octicon-link"></span></a>Static Scraper</h3>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">scraperjs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'scraperjs'</span><span class="p">);</span>
+<span class="nx">scraperjs</span><span class="p">.</span><span class="nx">StaticScraper</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">'https://news.ycombinator.com/'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">scrape</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="s2">".title a"</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">text</span><span class="p">();</span>
+        <span class="p">}).</span><span class="nx">get</span><span class="p">();</span>
+    <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">news</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">news</span><span class="p">);</span>
+    <span class="p">})</span>
+</pre></div>
+
+<p>The <code>scrape</code> promise receives two functions, the first will scrape the page and return the result. The second will receive the result of the scraping.
+This scraper function only receives jQuery a parameter to scrape the page. Still, very powerful. It uses <a href="https://github.com/cheeriojs/cheerio">cheerio</a> to do the magic behind the scenes.</p>
+
+<h3>
+<a name="dynamic-scraper" class="anchor" href="#dynamic-scraper"><span class="octicon octicon-link"></span></a>Dynamic Scraper</h3>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">scraperjs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'scraperjs'</span><span class="p">);</span>
+<span class="nx">scraperjs</span><span class="p">.</span><span class="nx">DynamicScraper</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">'https://news.ycombinator.com/'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">scrape</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="s2">".title a"</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">text</span><span class="p">();</span>
+        <span class="p">}).</span><span class="nx">get</span><span class="p">();</span>
+    <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">news</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">news</span><span class="p">);</span>
+    <span class="p">})</span>
+</pre></div>
+
+<p>Again, the <code>scrape</code> promise receives two functions, the only difference is that, because we're using a dynamic scraper, the scraping function is <a href="https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages">sandboxed</a> only with the page scope, so <strong>no closures(!)</strong>. This means that in <em>this</em> (and only in this) scraper you can't call a function that has not been defined inside the scraping function. Also, the result of the scraping function must be <a href="https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages">JSON-serializable</a>.
+We use <a href="https://github.com/sgentle/phantomjs-node">phantom</a> and <a href="https://github.com/ariya/phantomjs">phantomjs</a> to make it happen, we also inject jQuery for you.</p>
+
+<h2>
+<a name="show-me-the-way-aka-routes" class="anchor" href="#show-me-the-way-aka-routes"><span class="octicon octicon-link"></span></a>Show me the way! (aka Routes)</h2>
+
+<p>For a more flexible scraping and crawling of the web sometimes we need to go through multiple web sites and we don't want map every possible url format. For that scraperjs provides the Router class.</p>
+
+<h3>
+<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>Example</h3>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">scraperjs</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'scraperjs'</span><span class="p">),</span>
+    <span class="nx">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">scraperjs</span><span class="p">.</span><span class="nx">Router</span><span class="p">();</span>
+
+<span class="nx">router</span>
+    <span class="p">.</span><span class="nx">otherwise</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"Url '"</span><span class="o">+</span><span class="nx">url</span><span class="o">+</span><span class="s2">"' couldn't be routed."</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="kd">var</span> <span class="nx">path</span> <span class="o">=</span> <span class="p">{};</span>
+
+<span class="nx">router</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'https?://(www.)?youtube.com/watch/:id'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">createStatic</span><span class="p">()</span>
+    <span class="p">.</span><span class="nx">scrape</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">$</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="s2">"a"</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">"href"</span><span class="p">);</span>
+        <span class="p">}).</span><span class="nx">get</span><span class="p">();</span>
+    <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">links</span><span class="p">,</span> <span class="nx">utils</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">path</span><span class="p">[</span><span class="nx">utils</span><span class="p">.</span><span class="nx">params</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span> <span class="o">=</span> <span class="nx">links</span>
+    <span class="p">})</span>
+
+<span class="nx">router</span><span class="p">.</span><span class="nx">route</span><span class="p">(</span><span class="s2">"https://www.youtube.com/watch/YE7VzlLtp-4"</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"i'm done"</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+<p>Code that allows for parameters in paths is from the project <a href="https://github.com/aaronblohowiak/routes.js">Routes.js</a>, information about the <a href="https://github.com/aaronblohowiak/routes.js#path-formats">path formating</a> is there too.</p>
+
+<h1>
+<a name="api-overview" class="anchor" href="#api-overview"><span class="octicon octicon-link"></span></a>API overview</h1>
+
+<p>Scraperjs uses promises whenever possible.</p>
+
+<h4>
+<a name="staticscraper-dynamicscraper-and-scraperpromise" class="anchor" href="#staticscraper-dynamicscraper-and-scraperpromise"><span class="octicon octicon-link"></span></a>StaticScraper, DynamicScraper and ScraperPromise</h4>
+
+<p>So, the scrapers should be used with the ScraperPromise. By creating a scraper</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">scraperPromise</span> <span class="o">=</span> <span class="nx">scraperjs</span><span class="p">.</span><span class="nx">StaticScraper</span><span class="p">.</span><span class="nx">create</span><span class="p">()</span> <span class="c1">// or DynamicScraper</span>
+</pre></div>
+
+<p>The following promises can be made over it, they all return a scraper promise,</p>
+
+<ul>
+<li>
+<code>onStatusCode(code:number, callback:function(utils))</code>, executes the callback when the status code is equal to the code,</li>
+<li>
+<code>onStatusCode(callback:function(code:number, utils))</code>, executes the callback when receives the status code. The callback receives the current status code,</li>
+<li>
+<code>delay(time:number, callback:function(utils))</code>, delays the execution of the chain by time milliseconds,</li>
+<li>
+<code>timeout(time:number, callback:function(utils))</code>, executes the callback function after time milliseconds,</li>
+<li>
+<code>then(callback:function(utils))</code>, executes the callback after the last promise,</li>
+<li>
+<code>onError(callback:function(utils))</code>, executes the callback when there was an error, errors block the execution of the chain even if the promise was not defined,</li>
+<li>
+<code>done(callback:function(utils))</code>, executes the callback at the end of the promise chain, this is always executed, even if there was an error,</li>
+<li>
+<code>get(url:string)</code>, makes a simple HTTP GET request to the url. This promise should be used only once per scraper.</li>
+<li>
+<code>request(options:Object)</code>, makes a (possibly) more complex HTTP request, scraperjs uses the <a href="https://github.com/mikeal/request">request</a> module, and this method is a simple wrapper of <code>request.request()</code>. This promise should be used only once per scraper.</li>
+<li>
+<code>use(ScraperPromise)</code>, uses a ScraperPromise already instantiated.</li>
+<li>
+<code>scrape(scrapeFn:function(...?), callback:function(result:?, utils), ...?)</code>, scrapes the page. It executes the scrapeFn and passes it's result to the callback. When using the StaticScraper, the scrapeFn receives a jQuery function that is used to scrape the page. When using the DynamicScraper, the scrapeFn doesn't receive nothing and can only return a <a href="https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages">JSON-serializable</a> type. Optionally an arbitrary number of arguments can be passed to the scraping function.</li>
+</ul><p>All callback functions receive as their last parameter a utils object, with it the parameters of an url from a router can be accessed. Also the chain can be stopped.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">DynamicScraper</span><span class="p">.</span><span class="nx">create</span><span class="p">()</span>
+    <span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s2">"http://news.ycombinator.com"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">utils</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">utils</span><span class="p">.</span><span class="nx">stop</span><span class="p">();</span>
+        <span class="c1">// utils.params.paramName</span>
+    <span class="p">});</span>
+</pre></div>
+
+<p>The promise chain is fired with the same sequence it was declared, with the exception of the promises get and request that fire the chain when they've received a valid response, and the promises done and onError, which were explained above.</p>
+
+<h4>
+<a name="router" class="anchor" href="#router"><span class="octicon octicon-link"></span></a>Router</h4>
+
+<p>The router should be initialized like a class</p>
+
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">router</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">scraperjs</span><span class="p">.</span><span class="nx">Router</span><span class="p">(</span><span class="nx">options</span><span class="p">);</span>
+</pre></div>
+
+<p>The options object is optional, and these are the options:</p>
+
+<ul>
+<li>
+<code>firstMatch</code>, a boolean, if true the routing will stop once the first path is matched, the default is false.</li>
+</ul><p>The following promises can be made over it,</p>
+
+<ul>
+<li>
+<code>on(path:string|RegExp|function(url:string))</code>, makes the promise for the match url or regular expression, alternatively you can use a function to accept or not a passed url. The promises <code>get</code> or <code>request</code> and <code>createStatic</code> or <code>createDynamic</code> are expected after the on promise.</li>
+<li>
+<code>get()</code>, makes so that the page matched will be requested with a simple HTTP request,</li>
+<li>
+<code>request(options:Object)</code>, makes so that the page matched will be requested with a possible more complex HTTP request, , scraperjs uses the <a href="https://github.com/mikeal/request">request</a> module, and this method is a simple wrapper of <a href="https://github.com/mikeal/request#requestoptions-callback">request.request()</a>,</li>
+<li>
+<code>createStatic()</code>, associates a static scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a StaticScraper. Also the done promise of the scraper will not be available.</li>
+<li>
+<code>createDynamic()</code>, associates a dynamic scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a DynamicScraper. Also the done promise of the scraper will not be available.</li>
+<li>
+<code>route(url:string, callback:function(boolean))</code>, routes an url through all matched paths, calls the callback when it's executed, true is passed if the route was successful, false otherwise.</li>
+<li>
+<code>otherwise(callback:function(url:string))</code>, executes the callback function if the routing url didn't match any path.</li>
+<li>
+<code>onError(callback:function(url:string, error:Error))</code>, executes the callback when an error occurred on the routing scope, not on any scraper, for that situations you should use the onError promise of the scraper.</li>
+</ul><h4>
+<a name="more" class="anchor" href="#more"><span class="octicon octicon-link"></span></a>More</h4>
+
+<p>Check the <a href="./test/examples">examples</a>, the <a href="./test">tests</a> or just dig into the code, it's well documented and it's simple to understand.</p>
+
+<h1>
+<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h1>
+
+<p>As mentioned above, scraperjs is uses some dependencies to do the the heavy work, such as</p>
+
+<ul>
+<li>
+<a href="https://github.com/caolan/async"><code>async</code></a>, for flow control</li>
+<li>
+<a href="https://github.com/mikeal/request"><code>request</code></a>, to make HTTP requests, again, if you want more complex requests see it's <a href="https://github.com/mikeal/request#requestoptions-callback">documentation</a>
+</li>
+<li>
+<a href="https://github.com/sgentle/phantomjs-node"><code>phantom</code></a> + <a href="https://github.com/ariya/phantomjs"><code>phantomjs</code></a>, phantom is an awesome module that links node to phantom, used in the DynamicScraper</li>
+<li>
+<a href="https://github.com/cheeriojs/cheerio"><code>cheerio</code></a>, light and fast DOM manipulation, used to implement the StaticScraper</li>
+<li>
+<a href="https://github.com/jquery/jquery"><code>jquery</code></a>, to include jquery in the DynamicScraper</li>
+<li>although <a href="https://github.com/aaronblohowiak/routes.js"><code>Routes.js</code></a> is great, scraperjs doesn't use it to maintain it's "interface layout", but the code to transform the path given on the on promise to regular expressions is from them</li>
+</ul><h1>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h1>
+
+<p>This project is under the <a href="./LICENCE">MIT</a> license. </p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/ruipgil">ruipgil</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
