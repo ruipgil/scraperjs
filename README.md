@@ -1,5 +1,6 @@
 # Scraperjs
 [![Build Status](https://travis-ci.org/ruipgil/scraperjs.svg?branch=master)](https://travis-ci.org/ruipgil/scraperjs) [![Dependency Status](https://gemnasium.com/ruipgil/scraperjs.svg)](https://gemnasium.com/ruipgil/scraperjs) [![Coverage Status](https://coveralls.io/repos/ruipgil/scraperjs/badge.png)](https://coveralls.io/r/ruipgil/scraperjs) [![NPM version](https://badge.fury.io/js/scraperjs.svg)](http://badge.fury.io/js/scraperjs)
+
 Scraperjs is a web scraper module that make scraping the web an easy job.
 
 ## Installing
