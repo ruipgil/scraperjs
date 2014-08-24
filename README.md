@@ -1,4 +1,5 @@
-# Scraperjs [![Build Status](https://travis-ci.org/ruipgil/scraperjs.svg?branch=master)](https://travis-ci.org/ruipgil/scraperjs) [![Dependency Status](https://gemnasium.com/ruipgil/scraperjs.svg)](https://gemnasium.com/ruipgil/scraperjs) [![Coverage Status](https://coveralls.io/repos/ruipgil/scraperjs/badge.png)](https://coveralls.io/r/ruipgil/scraperjs) [![NPM version](https://badge.fury.io/js/scraperjs.svg)](http://badge.fury.io/js/scraperjs)
+# Scraperjs
+[![Build Status](https://travis-ci.org/ruipgil/scraperjs.svg?branch=master)](https://travis-ci.org/ruipgil/scraperjs) [![Dependency Status](https://gemnasium.com/ruipgil/scraperjs.svg)](https://gemnasium.com/ruipgil/scraperjs) [![Coverage Status](https://coveralls.io/repos/ruipgil/scraperjs/badge.png)](https://coveralls.io/r/ruipgil/scraperjs) [![NPM version](https://badge.fury.io/js/scraperjs.svg)](http://badge.fury.io/js/scraperjs)
 Scraperjs is a web scraper module that make scraping the web an easy job.
 
 ## Installing
@@ -167,15 +168,15 @@ The following promises can be made over it,
 + ```on(path:string|RegExp|function(url:string))```, makes the promise for the match url or regular expression, alternatively you can use a function to accept or not a passed url. The promises ```get``` or ```request``` and ```createStatic``` or ```createDynamic``` are expected after the on promise.
 + ```get()```, makes so that the page matched will be requested with a simple HTTP request,
 + ```request(options:Object)```, makes so that the page matched will be requested with a possible more complex HTTP request, , scraperjs uses the [request](https://github.com/mikeal/request) module, and this method is a simple wrapper of [request.request()](https://github.com/mikeal/request#requestoptions-callback),
-+ ```createStatic()```, associates a static scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a StaticScraper. Also the done promise of the scraper will not be available.
-+ ```createDynamic()```, associates a dynamic scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a DynamicScraper. Also the done promise of the scraper will not be available.
++ ```createStatic()```, associates a static scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a StaticScraper. Also the ```done``` promise of the scraper will not be available.
++ ```createDynamic()```, associates a dynamic scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a DynamicScraper. Also the ```done``` promise of the scraper will not be available.
 + ```route(url:string, callback:function(boolean))```, routes an url through all matched paths, calls the callback when it's executed, true is passed if the route was successful, false otherwise.
 + ```otherwise(callback:function(url:string))```, executes the callback function if the routing url didn't match any path.
-+ ```onError(callback:function(url:string, error:Error))```, executes the callback when an error occurred on the routing scope, not on any scraper, for that situations you should use the onError promise of the scraper.
++ ```onError(callback:function(url:string, error:Error))```, executes the callback when an error occurred on the routing scope, not on any scraper, for that situations you should use the ```onError``` promise of the scraper.
 
 #### More
 
-Check the [examples](./test/examples), the [tests](./test) or just dig into the code, it's well documented and it's simple to understand.
+Check the [examples](./doc/examples), the [tests](./test) or just dig into the code, it's well documented and it's simple to understand.
 
 # Dependencies
 
