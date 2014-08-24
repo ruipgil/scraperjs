@@ -29,8 +29,9 @@
       </header>
       <section>
         <h1>
-<a name="scraperjs----" class="anchor" href="#scraperjs----"><span class="octicon octicon-link"></span></a>Scraperjs <a href="https://travis-ci.org/ruipgil/scraperjs"><img src="https://travis-ci.org/ruipgil/scraperjs.svg?branch=master" alt="Build Status"></a> <a href="https://gemnasium.com/ruipgil/scraperjs"><img src="https://gemnasium.com/ruipgil/scraperjs.svg" alt="Dependency Status"></a> <a href="https://coveralls.io/r/ruipgil/scraperjs"><img src="https://coveralls.io/repos/ruipgil/scraperjs/badge.png" alt="Coverage Status"></a> <a href="http://badge.fury.io/js/scraperjs"><img src="https://badge.fury.io/js/scraperjs.svg" alt="NPM version"></a>
-</h1>
+<a name="scraperjs" class="anchor" href="#scraperjs"><span class="octicon octicon-link"></span></a>Scraperjs</h1>
+
+<p><a href="https://travis-ci.org/ruipgil/scraperjs"><img src="https://travis-ci.org/ruipgil/scraperjs.svg?branch=master" alt="Build Status"></a> <a href="https://gemnasium.com/ruipgil/scraperjs"><img src="https://gemnasium.com/ruipgil/scraperjs.svg" alt="Dependency Status"></a> <a href="https://coveralls.io/r/ruipgil/scraperjs"><img src="https://coveralls.io/repos/ruipgil/scraperjs/badge.png" alt="Coverage Status"></a> <a href="http://badge.fury.io/js/scraperjs"><img src="https://badge.fury.io/js/scraperjs.svg" alt="NPM version"></a></p>
 
 <p>Scraperjs is a web scraper module that make scraping the web an easy job.</p>
 
@@ -155,6 +156,8 @@ We use <a href="https://github.com/sgentle/phantomjs-node">phantom</a> and <a hr
 <li>
 <code>then(callback:function(utils))</code>, executes the callback after the last promise,</li>
 <li>
+<code>async(callback:function(done, utils))</code>, executes the callback, stopping the promise chain, resuming it when the <code>done</code> function is called,</li>
+<li>
 <code>onError(callback:function(utils))</code>, executes the callback when there was an error, errors block the execution of the chain even if the promise was not defined,</li>
 <li>
 <code>done(callback:function(utils))</code>, executes the callback at the end of the promise chain, this is always executed, even if there was an error,</li>
@@ -177,6 +180,33 @@ We use <a href="https://github.com/sgentle/phantomjs-node">phantom</a> and <a hr
 </pre></div>
 
 <p>The promise chain is fired with the same sequence it was declared, with the exception of the promises get and request that fire the chain when they've received a valid response, and the promises done and onError, which were explained above.</p>
+
+<p>You can also waterfall values between promises by returning them (with the exception of the promise <code>timeout</code>, that will always return <code>undefined</code>) and it can be access through <code>utils.lastReturn</code>.</p>
+
+<h5>
+<a name="a-more-powerful-dynamicscraper" class="anchor" href="#a-more-powerful-dynamicscraper"><span class="octicon octicon-link"></span></a>A more powerful DynamicScraper.</h5>
+
+<p>When lots of instances of DynamicScraper are needed, it's creation gets really heavy on resources and takes a lot of time. To make this more lighter you can use a <em>factory</em>, that will create only one PhantomJS instance, and every DynamicScraper will request a page to work with. To use it you must start the factory before any DynamicSrcaper is created, <code>scraperjs.DynamicScraper.startFactory()</code> and then close the factory after the execution of your program, <code>scraperjs.DynamicScraper.closeFactory()</code>.
+To make the scraping function more robust you can inject code into the page,</p>
+
+<div class="highlight highlight-js"><pre><span class="kd">var</span> <span class="nx">ds</span> <span class="o">=</span> <span class="nx">scraperjs</span><span class="p">.</span><span class="nx">DynamicScraper</span>
+    <span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="s1">'http://news.ycombinator.com'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">async</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">done</span><span class="p">,</span> <span class="nx">utils</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">utils</span><span class="p">.</span><span class="nx">scraper</span><span class="p">.</span><span class="nx">inject</span><span class="p">(</span><span class="nx">__dirname</span><span class="o">+</span><span class="s1">'/path/to/code.js'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// in this case if there was an error won't fire onError promise.</span>
+            <span class="k">if</span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">utils</span><span class="p">.</span><span class="nx">stop</span><span class="p">();</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">done</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nx">scrape</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">functionInTheCodeInjected</span><span class="p">();</span>
+        <span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="p">});</span>
+</pre></div>
 
 <h4>
 <a name="router" class="anchor" href="#router"><span class="octicon octicon-link"></span></a>Router</h4>
@@ -201,19 +231,19 @@ We use <a href="https://github.com/sgentle/phantomjs-node">phantom</a> and <a hr
 <li>
 <code>request(options:Object)</code>, makes so that the page matched will be requested with a possible more complex HTTP request, , scraperjs uses the <a href="https://github.com/mikeal/request">request</a> module, and this method is a simple wrapper of <a href="https://github.com/mikeal/request#requestoptions-callback">request.request()</a>,</li>
 <li>
-<code>createStatic()</code>, associates a static scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a StaticScraper. Also the done promise of the scraper will not be available.</li>
+<code>createStatic()</code>, associates a static scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a StaticScraper. Also the <code>done</code> promise of the scraper will not be available.</li>
 <li>
-<code>createDynamic()</code>, associates a dynamic scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a DynamicScraper. Also the done promise of the scraper will not be available.</li>
+<code>createDynamic()</code>, associates a dynamic scraper to use to scrape the matched page, this returns ScraperPromise, so any promise made from now on will be made over a ScraperPromise of a DynamicScraper. Also the <code>done</code> promise of the scraper will not be available.</li>
 <li>
 <code>route(url:string, callback:function(boolean))</code>, routes an url through all matched paths, calls the callback when it's executed, true is passed if the route was successful, false otherwise.</li>
 <li>
 <code>otherwise(callback:function(url:string))</code>, executes the callback function if the routing url didn't match any path.</li>
 <li>
-<code>onError(callback:function(url:string, error:Error))</code>, executes the callback when an error occurred on the routing scope, not on any scraper, for that situations you should use the onError promise of the scraper.</li>
+<code>onError(callback:function(url:string, error:Error))</code>, executes the callback when an error occurred on the routing scope, not on any scraper, for that situations you should use the <code>onError</code> promise of the scraper.</li>
 </ul><h4>
 <a name="more" class="anchor" href="#more"><span class="octicon octicon-link"></span></a>More</h4>
 
-<p>Check the <a href="./test/examples">examples</a>, the <a href="./test">tests</a> or just dig into the code, it's well documented and it's simple to understand.</p>
+<p>Check the <a href="./doc/examples">examples</a>, the <a href="./test">tests</a> or just dig into the code, it's well documented and it's simple to understand.</p>
 
 <h1>
 <a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h1>
@@ -244,6 +274,16 @@ We use <a href="https://github.com/sgentle/phantomjs-node">phantom</a> and <a hr
       </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
-    
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-54125554-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
