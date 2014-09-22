@@ -10,7 +10,7 @@ describe('AbstractScraper', function() {
 	it('get', function(done) {
 		var as = new AbstractScraper();
 		as.get(MISSING, function(err) {
-			assert.equal(err.code, 'ECONNREFUSED');
+			assert.ok((err.code == 'EADDRNOTAVAIL') || (err.code == 'ECONNREFUSED'));
 			done();
 		});
 	});
@@ -19,7 +19,7 @@ describe('AbstractScraper', function() {
 		as.request({
 			url: MISSING
 		}, function(err) {
-			assert.equal(err.code, 'ECONNREFUSED');
+			assert.ok((err.code == 'EADDRNOTAVAIL') || (err.code == 'ECONNREFUSED'));
 			done();
 		});
 	});
