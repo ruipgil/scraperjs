@@ -18,7 +18,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		exec: {
 			coverage: {
-				command: 'istanbul cover _mocha -- -t ' + MOCHA_TIMEOUT_MS + ' --root src/ test/'
+				command: 'istanbul cover ./node_modules/mocha/bin/_mocha -- -t ' + MOCHA_TIMEOUT_MS + ' --root src/ test/'
 			},
 			coveralls: {
 				command: 'istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -t ' + MOCHA_TIMEOUT_MS + ' --root src/ test/ && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js'
