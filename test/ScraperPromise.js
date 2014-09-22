@@ -157,6 +157,32 @@ function exec(ScraperType) {
 			assert.ok(temp === s);
 		});
 
+		it('with only the scraping function', function(done) {
+			var s = new ScraperPromise(new ScraperType())
+				.get(HN_CLONE);
+			var fn;
+			if (isDynamic()) {
+				fn = function() {
+					return $('.title a').map(function() {
+						return $(this).text();
+					}).get();
+				};
+			} else {
+				fn = function($) {
+					return $('.title a').map(function() {
+						return $(this).text();
+					}).get();
+				};
+			}
+			var temp = s.scrape(fn);
+			temp.then(function(utils) {
+				var news = utils.lastReturn;
+				assert.equal(news.length, expectedVal);
+				done();
+			});
+			assert.ok(temp === s);
+		});
+
 		it('with error', function(done) {
 			var s = new ScraperPromise(new ScraperType())
 				.get(HN_CLONE);
