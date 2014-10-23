@@ -221,7 +221,8 @@ Router.prototype = {
 	route: function(url, callback) {
 		var that = this,
 			atLeastOne = false,
-			stopFlag = {};
+			stopFlag = {},
+			lastReturn = undefined;
 		callback = callback || function() {};
 		async.eachSeries(this.promises, function(promiseObj, done) {
 
@@ -233,7 +234,8 @@ Router.prototype = {
 				scraper = promiseObj.scraper.clone();
 				atLeastOne = true;
 				scraper._setChainParameter(result);
-				scraper.done(function() {
+				scraper.done(function(utils) {
+					lastReturn = utils.lastReturn;
 					done(that.firstMatchStop ? stopFlag : undefined);
 				});
 				reqMethod(scraper, url);
@@ -245,7 +247,7 @@ Router.prototype = {
 			if (!atLeastOne) {
 				that.otherwiseFn(url);
 			}
-			callback(atLeastOne);
+			callback(atLeastOne, lastReturn);
 		});
 		return this;
 	}

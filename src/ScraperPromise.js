@@ -24,7 +24,9 @@ var ScraperPromise = function(scraper) {
 	 * @type {!function(?)}
 	 * @private
 	 */
-	this.doneCallback = function() {};
+	this.doneCallback = function(utils) {
+		return utils.lastReturn;
+	};
 	/**
 	 * Function to call when there's an error.
 	 *
