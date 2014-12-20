@@ -222,7 +222,7 @@ Router.prototype = {
 		var that = this,
 			atLeastOne = false,
 			stopFlag = {},
-			lastReturn = undefined;
+			lastReturn;
 		callback = callback || function() {};
 		async.eachSeries(this.promises, function(promiseObj, done) {
 
