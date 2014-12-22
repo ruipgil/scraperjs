@@ -8,6 +8,7 @@
     "scraping",
     "web"
   ],
+  "bin": "./bin/scraperjs",
   "scripts": {
     "test": "grunt test"
   },
@@ -24,10 +25,11 @@
   "license": "MIT",
   "dependencies": {
     "async": "~0.9.0",
-    "cheerio": "~0.17.0",
+    "cheerio": "~0.18.0",
     "jquery": "^2.1.1",
-    "phantom": "~0.6.5",
-    "request": "~2.40.0"
+    "phantom": "^0.7.1",
+    "request": "~2.51.0",
+    "commander": "^2.5.1"
   },
   "readmeFilename": "README.md",
   "directories": {

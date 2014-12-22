@@ -1,0 +1,64 @@
+#!/usr/bin/env node
+
+/*
+scraperjs http://example.com --text #title-id // returns array with text of #title-id's
+scraperjs http://example.com --html #title-id // returns the html
+scraperjs http://example.com --text #title-id -D // uses dynamic scraper
+scraperjs http://example.com --text #title-id -S // uses static scraper
+scraperjs http://example.com --eval "function($) { return $('#title-id').map(function() { return $(this).text(); }).get(); }"
+scraperjs http://example.com http://example.org ... --text #title-id
+
+
+
+scraperjs http://example.com --delay 15 --text #title-id -D
+scraperjs http://example.com --text #title-id --then "function(utils) { return utils.lastResult; }" --delay 15 -D
+*/
+
+var program = require('commander'),
+	sjs = require('../'),
+	async = require('async');
+
+program
+	.version(require('../package.json').version)
+	.usage('scraperjs url1 [urlN] [options]')
+	.option('--text <selector>', 'Scrapes the text from the selector.')
+	.option('--html <selector>', 'Scrapes the html from the selector.')
+	.option('--eval <functionBody>', 'Uses a function to scrape, providing only it\'s body.')
+	.option('-s, --static', 'Uses the static scraper. Used by default.', true)
+	.option('-d, --dynamic', 'Uses the dynamic scraper.', false)
+	.parse(process.argv);
+
+var urls = program.args;
+var ScraperType = (program.dynamic ? 'Dynamic' : 'Static' ) + 'Scraper';
+var body, fn;
+
+if(program.text || program.html) {
+	body = "return $('"+(program.text || program.html)+"').map(function(){ return $(this)."+(program.html?"html":"text")+"(); }).get();";
+} else if (program.eval) {
+	body = program.eval;
+} else {
+	throw new Error('Use --text, --html or --eval');
+}
+
+if(program.dynamic) {
+	fn = new Function(body);
+}else{
+	fn = new Function("$", body);
+}
+
+var scraper = sjs[ScraperType].create()
+	.scrape(fn, function(result) {
+		console.log(result);
+	});
+async.eachSeries(urls, function(url, done) {
+	scraper
+		.get(url)
+		.onError(function(err) {
+			done(err);
+		})
+		.done(function() {
+			done();
+		});
+}, function(err) {
+	throw err;
+});
