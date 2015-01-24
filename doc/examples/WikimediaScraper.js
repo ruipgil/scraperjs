@@ -3,7 +3,7 @@
  * This is a relatively simple example, to illustrate some of the
  *   possible functionalities and how to achieve them.
  *   There is no guarantee that this example will provide useful
- *   information.
+ *   results.
  *   Use this example with and at your own responsibility.
  *
  * In this example we run through a list of links, if they have a
@@ -84,15 +84,6 @@ router
 router.otherwise(function(url) {
 	unknownRoutes.push(url);
 });
-
-function route(url, callback) {
-	router.route(url, function(found, utils) {
-		if(utils.lastReturn) {
-			gatheredInformation.push(utils.lastReturn);
-		}
-		callback();
-	});
-}
 
 async.eachLimit(urls, 2, function(url, done) {
 	router.route(url, function(found, returned) {
