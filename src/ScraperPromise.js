@@ -279,7 +279,7 @@ ScraperPromise.prototype = {
 
 		if (error) {
 			this.errorCallback(error);
-			this.doneCallback();
+			this.doneCallback(utils);
 			return;
 		}
 
