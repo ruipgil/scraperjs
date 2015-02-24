@@ -21,8 +21,10 @@ var program = require('commander'),
 program
 	.version(require('../package.json').version)
 	.usage('scraperjs url1 [urlN] [options]')
-	.option('--text <selector>', 'Scrapes the text from the selector.')
-	.option('--html <selector>', 'Scrapes the html from the selector.')
+	.option('--selector <selector>', 'Selects an element')
+	.option('--text', 'Extracts the text from the selector element.')
+	.option('--html', 'Extracts the html from the selector element.')
+	.option('--attr <attribute>', 'Extracts an atribute of the selector element.')
 	.option('--eval <functionBody>', 'Uses a function to scrape, providing only it\'s body.')
 	.option('-s, --static', 'Uses the static scraper. Used by default.', true)
 	.option('-d, --dynamic', 'Uses the dynamic scraper.', false)
@@ -32,12 +34,23 @@ var urls = program.args;
 var ScraperType = (program.dynamic ? 'Dynamic' : 'Static' ) + 'Scraper';
 var body, fn;
 
-if(program.text || program.html) {
-	body = "return $('"+(program.text || program.html)+"').map(function(){ return $(this)."+(program.html?"html":"text")+"(); }).get();";
+if(program.attr) {
+	body = "return $('"+program.selector+"').attr('"+program.attr+"');";
+}
+if(program.selector && (program.text || program.html || program.attr)) {
+	var temp;
+	if(program.attr) {
+		temp = "attr('"+program.attr+"')";
+	}else if(program.html) {
+		temp = "html()";
+	}else if(program.text){
+		temp = "text()";
+	}
+	body = "return $('"+program.selector+"').map(function(){ return $(this)."+temp+"; }).get();";
 } else if (program.eval) {
 	body = program.eval;
 } else {
-	throw new Error('Use --text, --html or --eval');
+	throw new Error('Invalid usage. Run scraperjs --help for help');
 }
 
 if(program.dynamic) {
@@ -60,5 +73,7 @@ async.eachSeries(urls, function(url, done) {
 			done();
 		});
 }, function(err) {
-	throw err;
+	if(err) {
+		throw err;
+	}
 });
