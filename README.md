@@ -191,4 +191,4 @@ As mentioned above, scraperjs is uses some dependencies to do the the heavy work
 
 # License
 
-This project is under the [MIT](./LICENCE) license. 
+This project is under the [MIT](./LICENSE) license. 
