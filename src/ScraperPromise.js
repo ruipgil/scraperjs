@@ -66,17 +66,16 @@ ScraperPromise.prototype = {
 		if (typeof code == 'function') {
 			callback = code;
 			this.promises.push(function onGenericStatusCode(done, utils) {
-				utils.lastReturn = callback(this.scraper.getStatusCode(), utils);
-				done();
+				done(callback(this.scraper.getStatusCode(), utils));
 			});
 		} else {
 			this.promises.push(function onStatusCode(done, utils) {
 				if (code === this.scraper.getStatusCode()) {
-					utils.lastReturn = callback(utils);
+					done(callback(utils));
 				} else {
-					utils.lastReturn = undefined;
+					done(utils.lastReturn);
 				}
-				done();
+				
 			});
 		}
 		return this;
@@ -104,11 +103,9 @@ ScraperPromise.prototype = {
 		this.promises.push(function scrape(done, utils) {
 			this.scraper.scrape(scrapeFn, function(err, result) {
 				if (err) {
-					utils.lastReturn = undefined;
-					done(err);
+					done(undefined, err);
 				} else {
-					utils.lastReturn = callback(result, utils);
-					done();
+					done(callback(result, utils));
 				}
 			}, extraArguments);
 		});
@@ -129,8 +126,7 @@ ScraperPromise.prototype = {
 		callback = callback || function() {};
 		this.promises.push(function delay(done, utils) {
 			setTimeout(function() {
-				utils.lastReturn = callback(utils);
-				done();
+				done(callback(utils));
 			}, time);
 		});
 		return this;
@@ -152,8 +148,7 @@ ScraperPromise.prototype = {
 			setTimeout(function() {
 				callback(utils);
 			}, time);
-			utils.lastReturn = undefined;
-			done();
+			done(undefined);
 		});
 		return this;
 	},
@@ -180,8 +175,7 @@ ScraperPromise.prototype = {
 	 */
 	then: function(callback) {
 		this.promises.push(function then(done, utils) {
-			utils.lastReturn = callback(utils);
-			done();
+			done(callback(utils));
 		});
 		return this;
 	},
@@ -196,7 +190,7 @@ ScraperPromise.prototype = {
 	 */
 	async: function(callback) {
 		this.promises.push(function async(done, utils) {
-			utils.lastReturn = callback(done, utils);
+			callback(done, utils);
 		});
 		return this;
 	},
@@ -284,7 +278,8 @@ ScraperPromise.prototype = {
 		}
 
 		async.eachSeries(this.promises, function dispatcher(fn, callback) {
-			var done = function(err) {
+			var done = function(lastReturn, err) {
+				utils.lastReturn = lastReturn;
 				if (err === stopPointer) {
 					keep = false;
 					callback(err);
@@ -295,13 +290,13 @@ ScraperPromise.prototype = {
 				}
 			};
 			utils.stop = function() {
-				done(stopPointer);
+				done(null, stopPointer);
 			};
 
 			try {
 				fn.call(that, done, utils);
 			} catch (err) {
-				done(err);
+				done(null, err);
 			}
 		}, function(err) {
 			utils.stop = null;
