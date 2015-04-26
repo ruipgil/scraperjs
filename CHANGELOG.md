@@ -1,5 +1,11 @@
 # Change Log
 
+## [0.3.4] - 2015-04-26
+- Minor fixes related with documentation.
+- Fixed ``` async ``` promise works. It can receive values to be passed to the next promise. Internally it now uses this mechanism.
+- Support for node 0.12.
+- Changes in the command-line interface.
+
 ## [0.3.3] - 2015-02-11
 - Fixed bug where no argument was given to the ```done``` promise when there was an error.
 - Added experimental support for command-line interface.
