@@ -272,7 +272,7 @@ ScraperPromise.prototype = {
 		this.chainParameter = null;
 
 		if (error) {
-			this.errorCallback(error);
+			this.errorCallback(error, utils);
 			this.doneCallback(utils);
 			return;
 		}
