@@ -36,7 +36,7 @@ var DynamicScraper = function(options) {
 	this.options = {
 		onStdout: function() {},
 		onStderr: function() {}
-	}
+	};
 	for (var key in options) { this.options[key] = options[key]; }
 };
 DynamicScraper.prototype = Object.create(AbstractScraper.prototype);
