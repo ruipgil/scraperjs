@@ -11,7 +11,7 @@ var phantomOrig = require('phantom'),
  *
  * @extends {AbstractScraper}
  */
-var DynamicScraper = function() {
+var DynamicScraper = function(options) {
 	AbstractScraper.call(this);
 	/**
 	 * Phantom instance.
@@ -27,6 +27,17 @@ var DynamicScraper = function() {
 	 * @private
 	 */
 	this.page = null;
+	/**
+	 * Phantom's options
+	 *
+	 * @type {?}
+	 * @private
+	 */
+	this.options = {
+		onStdout: function() {},
+		onStderr: function() {}
+	};
+	for (var key in options) { this.options[key] = options[key]; }
 };
 DynamicScraper.prototype = Object.create(AbstractScraper.prototype);
 /**
@@ -35,10 +46,7 @@ DynamicScraper.prototype = Object.create(AbstractScraper.prototype);
  */
 DynamicScraper.prototype.loadBody = function(done) {
 	var that = this;
-	phantom.create('--load-images=no', {
-		onStdout: function() {},
-		onStderr: function() {}
-	}, function(ph) {
+	phantom.create('--load-images=no', that.options, function(ph) {
 		that.ph = ph;
 		ph.createPage(function(page) {
 			that.page = page;
@@ -127,8 +135,8 @@ DynamicScraper.prototype.clone = function() {
  * @public
  * @static
  */
-DynamicScraper.create = function(url) {
-	return AbstractScraper.create(DynamicScraper, url);
+DynamicScraper.create = function(url, options) {
+	return AbstractScraper.create(DynamicScraper, url, options);
 };
 /**
  * Starts the factory. A factory should only be open once, and after
