@@ -1,5 +1,10 @@
 # Change Log
 
+## [0.4.0] - 2015-09-19
+- Passing utils to the error callback by @rvernica
+- Add an 'options' argument to DynamicScraper that get passed to Phantom by @vdraceil
+- Updated dependencies
+
 ## [0.3.4] - 2015-04-26
 - Minor fixes related with documentation.
 - Fixed ``` async ``` promise works. It can receive values to be passed to the next promise. Internally it now uses this mechanism.
