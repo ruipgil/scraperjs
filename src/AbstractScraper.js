@@ -186,8 +186,8 @@ AbstractScraper.prototype = {
  * @public
  * @static
  */
-AbstractScraper.create = function(ScraperType, url) {
-	var promise = new ScraperPromise(new ScraperType());
+AbstractScraper.create = function(ScraperType, url, options) {
+	var promise = new ScraperPromise(new ScraperType(options));
 	if (url) {
 		promise.get(url);
 	}
