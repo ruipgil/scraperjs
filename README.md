@@ -177,6 +177,10 @@ The following promises can be made over it,
 + ```otherwise(callback:function(url:string))```, executes the callback function if the routing url didn't match any path.
 + ```onError(callback:function(url:string, error:Error))```, executes the callback when an error occurred on the routing scope, not on any scraper, for that situations you should use the ```onError``` promise of the scraper.
 
+#### Notes
+
+* Scraperjs **always** fetches the document with `request`, and then when using a DynamicScraper, leverages phantom's `setContent()` to set the body of the page object. This will result in subtly different processing of web pages compared to directly loading a URL in PhantomJS.
+
 #### More
 
 Check the [examples](./doc/examples), the [tests](./test) or just dig into the code, it's well documented and it's simple to understand.
