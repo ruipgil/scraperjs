@@ -1,5 +1,9 @@
 # Change Log
 
+## [0.4.1] - 2015-10-04
+- Url of the page being scraped can now be easily accessed using ``` utils.url ```.
+- Added error handling example.
+
 ## [0.4.0] - 2015-09-19
 - Passing utils to the error callback by @rvernica
 - Add an 'options' argument to DynamicScraper that get passed to Phantom by @vdraceil

@@ -264,6 +264,7 @@ ScraperPromise.prototype = {
 			stopPointer = {},
 			utils = {
 				stop: null,
+				url: this.scraper.url,
 				scraper: this,
 				params: param,
 				lastReturn: undefined
