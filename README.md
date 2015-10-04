@@ -116,7 +116,7 @@ The following promises can be made over it, they all return a scraper promise,
 + ```done(callback:function(utils))```, executes the callback at the end of the promise chain, this is always executed, even if there was an error,
 + ```get(url:string)```, makes a simple HTTP GET request to the url. This promise should be used only once per scraper.
 + ```request(options:Object)```, makes a (possibly) more complex HTTP request, scraperjs uses the [request](https://github.com/mikeal/request) module, and this method is a simple wrapper of ```request.request()```. This promise should be used only once per scraper.
-+ ```scrape(scrapeFn:function(...?), callback:function(result:?, utils)=, ...?)```, scrapes the page. It executes the scrapeFn and passes it's result to the callback. When using the StaticScraper, the scrapeFn receives a jQuery function that is used to scrape the page. When using the DynamicScraper, the scrapeFn doesn't receive anything and can only return a [JSON-serializable](https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages) type. Optionally an arbitrary number of arguments can be passed to the scraping function. A callback may not be provided, if so, the result of the scraping may be accessed with ``` utils.lastReturn ``` in the next promise.
++ ```scrape(scrapeFn:function(...?), callback:function(result:?, utils)=, ...?)```, scrapes the page. It executes the scrapeFn and passes it's result to the callback. When using the StaticScraper, the scrapeFn receives a jQuery function that is used to scrape the page. When using the DynamicScraper, the scrapeFn doesn't receive anything and can only return a [JSON-serializable](https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages) type. Optionally an arbitrary number of arguments can be passed to the scraping function. The callback may be omitted, if so, the result of the scraping may be accessed with ``` utils.lastReturn ``` in the next promise.
 
 All callback functions receive as their last parameter a utils object, with it the parameters of an url from a router can be accessed. Also the chain can be stopped.
 ```javascript
@@ -176,6 +176,10 @@ The following promises can be made over it,
 + ```use(ScraperPromise)```, uses a ScraperPromise already instantiated.
 + ```otherwise(callback:function(url:string))```, executes the callback function if the routing url didn't match any path.
 + ```onError(callback:function(url:string, error:Error))```, executes the callback when an error occurred on the routing scope, not on any scraper, for that situations you should use the ```onError``` promise of the scraper.
+
+#### Notes
+
+* Scraperjs **always** fetches the document with `request`, and then when using a DynamicScraper, leverages phantom's `setContent()` to set the body of the page object. This will result in subtly different processing of web pages compared to directly loading a URL in PhantomJS.
 
 #### More
 
