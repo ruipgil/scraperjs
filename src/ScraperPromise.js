@@ -195,6 +195,13 @@ ScraperPromise.prototype = {
 		return this;
 	},
 	/**
+	 * @deprecated
+	 */
+	onError: function(callback) {
+		console.warn("The 'onError' is being DEPRECATED in favor of 'catch'");
+		return this.catch(callback);
+	},
+	/**
 	 * Sets a promise to when an error occur, note that an error will
 	 *   break the promise chain, so this is the next promise to be
 	 *   called and if the done promise is not set the last. To avoid
@@ -206,7 +213,7 @@ ScraperPromise.prototype = {
 	 *   be made.
 	 * @public
 	 */
-	onError: function(callback) {
+	"catch": function(callback) {
 		this.errorCallback = callback;
 		return this;
 	},
