@@ -177,7 +177,7 @@ ScraperPromise.prototype = {
 	 */
 	then: function(callback) {
 		this.promises.push(function then(done, utils) {
-			done(callback(utils));
+			done(callback(utils.lastReturn, utils));
 		});
 		return this;
 	},
