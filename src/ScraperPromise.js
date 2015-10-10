@@ -96,6 +96,8 @@ ScraperPromise.prototype = {
 	 * @public
 	 */
 	scrape: function(scrapeFn, callback) {
+		var stackTrace = new Error().stack;
+
 		var extraArguments = Array.prototype.slice.call(arguments, 2);
 		callback = callback || function(result) {
 			return result;
@@ -107,7 +109,7 @@ ScraperPromise.prototype = {
 				} else {
 					done(callback(result, utils));
 				}
-			}, extraArguments);
+			}, extraArguments, stackTrace);
 		});
 		return this;
 	},

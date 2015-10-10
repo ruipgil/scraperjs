@@ -70,16 +70,55 @@ DynamicScraper.prototype.loadBody = function(done) {
  *   result of the scraping.
  * @param  {!Array=} args Additional arguments to pass to the scraping
  *   function. They must be JSON serializable.
+ * @param  {!string=} stackTrace Stack trace to produce better error
+ *   messages.
  * @return {!AbstractScraper} This scraper.
  * @override
  * @public
  */
-DynamicScraper.prototype.scrape = function(scraperFn, callbackFn, args) {
+DynamicScraper.prototype.scrape = function(scraperFn, callbackFn, args, stackTrace) {
 	args = args || [];
+
+	var wrapper = function wrapper(fnStr) {
+	  var args = Array.prototype.slice.call(arguments);
+	  var rg = /^function\s+([a-zA-Z_$][a-zA-Z_$0-9]*)?\((.*?)\) {/g;
+	  var a = rg.exec(fnStr);
+	  var fnArgs = a[2].match(/([^,\s]+)/g) || [];
+	  var fnBody = fnStr.slice(fnStr.indexOf("{")+1, fnStr.lastIndexOf("}"));
+	  fnArgs.push(fnBody);
+	  var scraperFn = Function.apply(this, fnArgs);
+
+	  try {
+	    var gs = args.slice(1);
+	    gs.unshift($);
+	    var result = scraperFn.apply(this, gs);
+	    return {
+	      error: null,
+	      result: result
+	    };
+	  } catch(e) {
+	  	var errObj = {
+	  		message: e.message
+	  	};
+	  	for(var x in e) {
+	  		errObj[x] = e[x];
+	  	}
+	    return {
+	      error: errObj,
+	      result: null
+	    };
+	  }
+	};
+
+	args.unshift(scraperFn.toString());
 	args.unshift(function(result) {
-		callbackFn(null, result);
+		if(result.error) {
+			callbackFn(DynamicScraper.generateMockErrorMessage(result.error, stackTrace), null);
+		} else {
+			callbackFn(null, result.result);
+		}
 	});
-	args.unshift(scraperFn);
+	args.unshift(wrapper);
 
 	this.page.evaluate.apply(this.page, args);
 	return this;
@@ -166,6 +205,41 @@ DynamicScraper.closeFactory = function() {
 	}
 	phantom = phantomOrig;
 	return DynamicScraper;
+};
+/**
+ * Generates a mock error message that is similar to one produced
+ *   by a function runned in node, and not phantomjs.
+ * @param  {!Object} err       	Error object sent by Phantom.
+ * @param  {!string} stackTrace Stack trace of where the promise was defined.
+ * @return {!Error}             Error message.
+ * @private
+ * @static
+ */
+DynamicScraper.generateMockErrorMessage = function(err, stackTrace) {
+	var rg = /^\s{4}at ([^\s]+) \(([^\s]*)\:(\d+):(\d+)\)$/mg;
+	rg.exec(stackTrace);
+	var emsg = rg.exec(stackTrace);
+	var sob = emsg[1];
+	var sfile = emsg[2];
+	var sline = emsg[3];
+	var sc = emsg[4];
+
+	var line = Number(sline) + Math.max(err.line-1, 0);
+
+	var mock = new Error(err.message);
+	// Prevents the use of a property named 'line'!
+	delete err.line;
+	for(var x in err) {
+		mock[x] = err[x];
+	}
+	mock.stack = mock.stack.replace(/\t/g, '    ');
+
+	var ats = mock.stack.split('\n');
+	ats.unshift('    at ' + sob + ' (' + sfile + ':' + line + ':' + sc + ')');
+	ats.unshift('Error' + (err.message?': '+err.message:''));
+	mock.stack = ats.join('\n');
+
+	return mock;
 };
 /**
  * Location of the jquery file.
