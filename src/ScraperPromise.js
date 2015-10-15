@@ -338,7 +338,7 @@ ScraperPromise.prototype = {
 			promise = new ScraperPromise(instance);
 		promise._setPromises(this.promises);
 		promise.done(this.doneCallback);
-		promise.onError(this.errorCallback);
+		promise.catch(this.errorCallback);
 		return promise;
 	}
 };

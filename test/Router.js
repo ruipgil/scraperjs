@@ -197,7 +197,7 @@ describe('Router', function() {
 		r
 			.on(LH + '/info/:id')
 			.createStatic()
-			.then(function(utils) {
+			.then(function(last, utils) {
 				assert.ok(utils.params.id, '7623hgjfs73');
 			});
 		r.route(LH + '/info/7623hgjfs73', function(found) {
