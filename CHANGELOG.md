@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.0.0] - 2015-10-17
+- ``` catch ``` promise is the new standard way to deal with errors. ``` onError ``` is being deprecated, the two work the same way.
+- ``` then ``` promise receives the value returned in the last promise as the first parameter, the second parameter is the ``` utils ``` object.
+- Errors generated inside the dynamic scraper's scraping function will fire the ``` catch ``` promise.
+
 ## [0.4.1] - 2015-10-04
 - Url of the page being scraped can now be easily accessed using ``` utils.url ```.
 - Added error handling example.
