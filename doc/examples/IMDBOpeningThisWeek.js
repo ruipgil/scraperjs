@@ -1,5 +1,5 @@
 /* global $ */
-var sjs = require('scraperjs');
+var sjs = require('../../');
 /**
  * Displays the movies opening this week, from IMDB.
  * This example is inspired by user jasode at Hacker News.
@@ -9,11 +9,12 @@ var sjs = require('scraperjs');
  */
 sjs.DynamicScraper
 	.create('https://www.imdb.com')
-	.scrape(function() {
+	.scrape(function($) {
 		return $('.otw-title').map(function() {
 			return $(this).text().trim();
 		}).get();
-	}, function(movies) {
+	})
+	.then(function(movies) {
 		movies.forEach(function(movie) {
 			console.log(movie);
 		});

@@ -34,7 +34,7 @@ router
       utils.stop();
     }
   })
-  .onError(function(err, utils) {
+  .catch(function(err, utils) {
     // deal identify with errors and recover or panic
     // this has the same problems as js error handling,
     // it's messy and ugly
@@ -57,9 +57,8 @@ router
       throw create30thLinkError();
     }
   })
-  .then(function(utils) {
-    var last = utils.lastReturn;
-    log("'%s' has '%s' as it's 30th link", utils.url, last);
+  .then(function(thirty, utils) {
+    log("'%s' has '%s' as it's 30th link", utils.url, thirty);
   });
 
 // Front page of google doesn't have a 30th link

@@ -1,6 +1,11 @@
 var sjs = require('../../src/Scraper'),
 	url = process.argv.slice(2)[0];
 
+if(!url) {
+	console.log('Usage: node LinkGetter.js <url>');
+	return;
+}
+
 /*
  Get all the links in a page.
  */
@@ -13,7 +18,8 @@ sjs.StaticScraper
 		return $('a').map(function() {
 			return $(this).attr('href');
 		}).get();
-	}, function(links) {
+	})
+	.then(function(links) {
 		links.forEach(function(link) {
 			console.log(link);
 		});

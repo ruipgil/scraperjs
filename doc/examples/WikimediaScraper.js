@@ -19,6 +19,11 @@ var sjs = require('../../src/Scraper'),
 	parseUrl = require('url').parse,
 	urls = process.argv.slice(2);
 
+if(!urls || !urls.length) {
+	console.log("Usage: node WikimediaScraper.js url [...url]");
+	return;
+}
+
 var IMDB_SELECTOR = '[itemprop=description]',
 	gatheredInformation = [],
 	unknownRoutes = [];
@@ -43,8 +48,7 @@ router
 			text: $('p').first().text()
 		};
 	})
-	.then(function(utils) {
-		var last = utils.lastReturn;
+	.then(function(last, utils) {
 		last.lang = utils.params.lang;
 		return last;
 	});
@@ -62,7 +66,8 @@ var scraperForWiki = sjs.StaticScraper
 			title: $('h1').first().text(),
 			text: $('p').first().text()
 		};
-	}, function(last, utils) {
+	})
+	.then(function(last, utils) {
 		if(utils.params) {
 			last.lang = utils.params.lang;
 		} else {

@@ -10,7 +10,8 @@ sjs.StaticScraper
 		}).get().filter(function(elm) {
 			return elm != 'More';
 		});
-	}, function(news) {
+	})
+	.then(function(news) {
 		news.forEach(function(elm) {
 			console.log(elm);
 		});
