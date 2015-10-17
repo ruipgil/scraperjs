@@ -66,8 +66,12 @@ module.exports = function(grunt) {
 				src: 'test/ScraperError.js',
 				options: MOCHA_OPTIONS
 			},
+			commandLine: {
+				src: 'test/commandLine.js',
+				options: MOCHA_OPTIONS
+			},
 			all: {
-				src: ['test/AbstractScraper.js', 'test/StaticScraper.js', 'test/DynamicScraper.js', 'test/ScraperPromise.js', 'test/Router.js', 'test/ScraperError.js'],
+				src: ['test/AbstractScraper.js', 'test/StaticScraper.js', 'test/DynamicScraper.js', 'test/ScraperPromise.js', 'test/Router.js', 'test/ScraperError.js', 'test/commandLine.js'],
 				options: MOCHA_OPTIONS
 			}
 		}

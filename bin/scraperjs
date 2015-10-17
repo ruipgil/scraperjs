@@ -20,7 +20,10 @@ var program = require('commander'),
 
 program
 	.version(require('../package.json').version)
-	.usage('scraperjs url1 [urlN] [options]')
+	.usage(['url [url ...] --text --selector <selector> -s',
+		'url [url ...] --html --selector <selector> -s',
+		'url [url ...] --attr <attribute> --selector <selector> -s',
+		'url [url ...] --eval <functionBody> -s'].join('\n\t\t'))
 	.option('--selector <selector>', 'Selects an element')
 	.option('--text', 'Extracts the text from the selector element.')
 	.option('--html', 'Extracts the html from the selector element.')
@@ -32,41 +35,45 @@ program
 
 var urls = program.args;
 var ScraperType = (program.dynamic ? 'Dynamic' : 'Static' ) + 'Scraper';
-var body, fn;
+var fn, args;
 
-if(program.attr) {
-	body = "return $('"+program.selector+"').attr('"+program.attr+"');";
-}
 if(program.selector && (program.text || program.html || program.attr)) {
+	fn = function athScraper($, obj) {
+		return $(obj.selector).map(function(){
+			return obj.which?$(this)[obj.what](obj.which):$(this)[obj.what]();
+		}).get();
+	};
+	args = {
+		selector: program.selector,
+		what: undefined,
+		which: undefined
+	};
+
 	var temp;
 	if(program.attr) {
-		temp = "attr('"+program.attr+"')";
+		args.what = 'attr';
+		args.which = program.attr;
 	}else if(program.html) {
-		temp = "html()";
+		args.what = 'html';
 	}else if(program.text){
-		temp = "text()";
+		args.what = 'text';
 	}
-	body = "return $('"+program.selector+"').map(function(){ return $(this)."+temp+"; }).get();";
 } else if (program.eval) {
-	body = program.eval;
+	fn = new Function("$", "obj", program.eval);
+	args = {};
 } else {
-	throw new Error('Invalid usage. Run scraperjs --help for help');
+	console.error('Invalid usage. Run scraperjs --help for help');
+	return;
 }
 
-if(program.dynamic) {
-	fn = new Function(body);
-}else{
-	fn = new Function("$", body);
-}
-
-var scraper = sjs[ScraperType].create()
-	.scrape(fn, function(result) {
-		console.log(result);
-	});
+var scraper = sjs[ScraperType].create();
+scraper.scrape.apply(scraper, [fn, function(result) {
+	console.log(JSON.stringify(result));
+}, args]);
 async.eachSeries(urls, function(url, done) {
 	scraper
 		.get(url)
-		.onError(function(err) {
+		.catch(function(err) {
 			done(err);
 		})
 		.done(function() {
@@ -74,6 +81,6 @@ async.eachSeries(urls, function(url, done) {
 		});
 }, function(err) {
 	if(err) {
-		throw err;
+		console.error(err.stack);
 	}
 });
