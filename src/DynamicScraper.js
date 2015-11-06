@@ -218,6 +218,6 @@ DynamicScraper.generateMockErrorMessage = function(err, stackTrace) {
  * @private
  * @static
  */
-DynamicScraper.JQUERY_FILE = __dirname + '/../node_modules/jquery/dist/jquery.min.js';
+DynamicScraper.JQUERY_FILE = require.resolve('jquery');
 
 module.exports = DynamicScraper;

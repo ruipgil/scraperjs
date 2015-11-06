@@ -59,7 +59,7 @@ scraperjs.DynamicScraper.create('https://news.ycombinator.com/')
 	})
 ```
 
-Again, the ```scrape``` promise receives a function to scrape the page, the only difference is that, because we're using a dynamic scraper, the scraping function is [sandboxed](https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages) only with the page scope, so **no closures(!)**. This means that in *this* (and only in this) scraper you can't call a function that has not been defined inside the scraping function. Also, the result of the scraping function must be [JSON-serializable](https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages).
+Again, the ```scrape``` promise receives a function to scrape the page, the only difference is that, because we're using a dynamic scraper, the scraping function is [sandboxed](https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages) only with the page scope, so **no closures!** This means that in *this* (and only in this) scraper you can't call a function that has not been defined inside the scraping function. Also, the result of the scraping function must be [JSON-serializable](https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages).
 We use [phantom](https://github.com/sgentle/phantomjs-node) and [phantomjs](https://github.com/ariya/phantomjs) to make it happen, we also inject jQuery for you.
 
 However, it's possible to [pass JSON-serializable data](**Example**) to *any* scraper.
