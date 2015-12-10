@@ -64,6 +64,8 @@ We use [phantom](https://github.com/sgentle/phantomjs-node) and [phantomjs](http
 
 However, it's possible to [pass JSON-serializable data](**Example**) to *any* scraper.
 
+*The ```$``` varible received by the scraping function is, only for the dynamic scraper, hardcoded.*
+
 ## Show me the way! (aka Routes)
 
 For a more flexible scraping and crawling of the web sometimes we need to go through multiple web sites and we don't want map every possible url format. For that scraperjs provides the Router class.

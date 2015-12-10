@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.0.2] - 2015-12-10
+- Dependency bump
+
 ## [1.0.0] - 2015-10-17
 - ``` catch ``` promise is the new standard way to deal with errors. ``` onError ``` is being deprecated, the two work the same way.
 - ``` then ``` promise receives the value returned in the last promise as the first parameter, the second parameter is the ``` utils ``` object.
