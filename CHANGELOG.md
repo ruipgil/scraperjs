@@ -1,5 +1,8 @@
 # Change Log
 
+## [1.1.0] - 2015-12-12
+- Result of last promise is passed as first parameter to the ``` async ``` promise.
+
 ## [1.0.2] - 2015-12-10
 - Dependency bump
 

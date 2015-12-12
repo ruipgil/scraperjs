@@ -75,7 +75,7 @@ ScraperPromise.prototype = {
 				} else {
 					done(utils.lastReturn);
 				}
-				
+
 			});
 		}
 		return this;
@@ -192,7 +192,7 @@ ScraperPromise.prototype = {
 	 */
 	async: function(callback) {
 		this.promises.push(function async(done, utils) {
-			callback(done, utils);
+			callback(utils.lastReturn, done, utils);
 		});
 		return this;
 	},

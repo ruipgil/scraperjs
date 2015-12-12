@@ -62,7 +62,7 @@ function exec(ScraperType) {
 	it('then', function(done) {
 		var s = new ScraperPromise(new ScraperType())
 			.get(HN_CLONE);
-		var temp = s.async(function(done) {
+		var temp = s.async(function(_, done) {
 			done();
 		});
 		s.done(function() {
