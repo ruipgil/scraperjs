@@ -1,5 +1,10 @@
 # Change Log
 
+## [1.2.0] - 2015-12-14
+- Change order of parameters when continuing promise chain.
+- ``` async ```'s callback function receives (err, result) parameters.
+- Last result is passed to ``` done ``` promise.
+
 ## [1.1.0] - 2015-12-12
 - Result of last promise is passed as first parameter to the ``` async ``` promise.
 

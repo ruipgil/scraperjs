@@ -114,12 +114,12 @@ var scraperPromise = scraperjs.StaticScraper.create() // or DynamicScraper
 The following promises can be made over it, they all return a scraper promise,
 + ```onStatusCode(code:number, callback:function(utils:Object))```, executes the callback when the status code is equal to the code,
 + ```onStatusCode(callback:function(code:number, utils:Object))```, executes the callback when receives the status code. The callback receives the current status code,
-+ ```delay(time:number, callback:function(utils:Object))```, delays the execution of the chain by time (in milliseconds),
-+ ```timeout(time:number, callback:function(utils:Object))```, executes the callback function after time (in milliseconds),
-+ ```then(lastResult:?, callback:function(utils:Object))```, executes the callback after the last promise,
-+ ```async(callback:function(done:function(result:?, err:?), utils))```, executes the callback, stopping the promise chain, resuming it when the ```done``` function is called. You can provide a result to be passed down the promise chain, or an error to trigger the catch promise,
++ ```delay(time:number, callback:function(last:?, utils:Object))```, delays the execution of the chain by time (in milliseconds),
++ ```timeout(time:number, callback:function(last:?, utils:Object))```, executes the callback function after time (in milliseconds),
++ ```then(lastResult:?, callback:function(last:?, utils:Object))```, executes the callback after the last promise,
++ ```async(callback:function(last:?, done:function(result:?, err:?), utils))```, executes the callback, stopping the promise chain, resuming it when the ```done``` function is called. You can provide a result to be passed down the promise chain, or an error to trigger the catch promise,
 + ```catch(callback:function(error:Error, utils:Object))```, executes the callback when there was an error, errors block the execution of the chain even if the promise was not defined,
-+ ```done(callback:function(utils:Object))```, executes the callback at the end of the promise chain, this is always executed, even if there was an error,
++ ```done(callback:function(last:?, utils:Object))```, executes the callback at the end of the promise chain, this is always executed, even if there was an error,
 + ```get(url:string)```, makes a simple HTTP GET request to the url. This promise should be used only once per scraper.
 + ```request(options:Object)```, makes a (possibly) more complex HTTP request, scraperjs uses the [request](https://github.com/mikeal/request) module, and this method is a simple wrapper of ```request.request()```. This promise should be used only once per scraper.
 + ```scrape(scrapeFn:function(...?), callback:function(result:?, utils:Object)=, ...?)```, scrapes the page. It executes the scrapeFn and passes it's result to the callback. When using the StaticScraper, the scrapeFn receives a jQuery function that is used to scrape the page. When using the DynamicScraper, the scrapeFn doesn't receive anything and can only return a [JSON-serializable](https://github.com/sgentle/phantomjs-node/wiki#evaluating-pages) type. Optionally an arbitrary number of arguments can be passed to the scraping function. The callback may be omitted, if so, the result of the scraping may be accessed with the ``` then ``` promise or ``` utils.lastReturn ``` in the next promise.
@@ -154,11 +154,11 @@ To make the scraping function more robust you can inject code into the page,
 ```js
 var ds = scraperjs.DynamicScraper
 	.create('http://news.ycombinator.com')
-	.async(function(done, utils) {
+	.async(function(_, done, utils) {
 		utils.scraper.inject(__dirname+'/path/to/code.js', function(err) {
 			// in this case if there was an error won't fire catch promise.
 			if(err) {
-				utils.stop();
+				done(err);
 			} else {
 				done();
 			}

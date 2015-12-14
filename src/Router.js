@@ -234,8 +234,8 @@ Router.prototype = {
 				scraper = promiseObj.scraper.clone();
 				atLeastOne = true;
 				scraper._setChainParameter(result);
-				scraper.done(function(utils) {
-					lastReturn = utils.lastReturn;
+				scraper.done(function(lr, utils) {
+					lastReturn = lr;
 					done(that.firstMatchStop ? stopFlag : undefined);
 				});
 				reqMethod(scraper, url);

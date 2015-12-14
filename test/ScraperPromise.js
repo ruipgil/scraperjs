@@ -71,18 +71,32 @@ function exec(ScraperType) {
 		assert.ok(temp === s);
 	});
 
-	it('catch', function(done) {
-		var s = new ScraperPromise(new ScraperType())
-			.get(HN_CLONE)
-			.then(function() {
-				throw new Error('random message');
-			});
-		var temp = s.catch(function(err) {
-			assert.equal(err.message, 'random message');
-			done();
-		});
-		assert.ok(s === temp);
-	});
+  describe('catch', function() {
+    it('on sync', function(done) {
+      var s = new ScraperPromise(new ScraperType())
+        .get(HN_CLONE)
+        .then(function() {
+          throw new Error('random message');
+        });
+      var temp = s.catch(function(err) {
+        assert.equal(err.message, 'random message');
+        done();
+      });
+      assert.ok(s === temp);
+    });
+    it('on async', function(done) {
+      var s = new ScraperPromise(new ScraperType())
+        .get(HN_CLONE)
+        .async(function(_, done) {
+          done(new Error('random message'));
+        });
+      var temp = s.catch(function(err) {
+        assert.equal(err.message, 'random message');
+        done();
+      });
+      assert.ok(s === temp);
+    });
+  });
 
 	// FIXME - this is not working for the dynamic scraper with factory
 	if (!isDynamic()) {
@@ -276,8 +290,8 @@ function exec(ScraperType) {
 
 	it('passing values between promises', function(done) {
 		new ScraperPromise(new ScraperType())
-			.done(function(utils) {
-				assert.deepEqual(utils.lastReturn, 5);
+			.done(function(result, utils) {
+				assert.deepEqual(result, 5);
 				done();
 			})
 			.then(function(last, utils) {
@@ -326,7 +340,7 @@ function exec(ScraperType) {
 		it('scraper', function(done) {
 			var s = new ScraperPromise(new ScraperType());
 			s.get(HN_CLONE)
-				.done(function(utils) {
+				.done(function(_, utils) {
 					assert.ok(utils.scraper === s);
 					done();
 				});
@@ -334,7 +348,7 @@ function exec(ScraperType) {
 		it('params', function(done) {
 			var s = new ScraperPromise(new ScraperType());
 			s.get(HN_CLONE)
-				.done(function(utils) {
+				.done(function(_, utils) {
 					assert.ok(!utils.params);
 					done();
 				});
