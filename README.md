@@ -19,7 +19,7 @@ grunt test
 # Getting started
 
 Scraperjs exposes two different scrapers,
-+ a **SimpleScraper**, that is light fast and with a low footprint, however it doesn't allow for more complex situations, like scraping dynamic content.
++ a **StaticScraper**, that is light fast and with a low footprint, however it doesn't allow for more complex situations, like scraping dynamic content.
 + a **DynamicScraper**, that is a bit more heavy, but allows you to scrape dynamic content, like in the browser console.
 both scrapers expose a *very* similar API, with some minor differences when it comes to scraping.
 
